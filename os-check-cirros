@@ -1,0 +1,12 @@
+#!/bin/bash
+
+source $(dirname $0)/common
+
+IP=$(nova floating-ip-list | grep $(nova list | grep cirros | tr -d '|' | xargs | cut -d' ' -f1) | tr -d '|' | xargs | cut -d' ' -f1)
+
+sshwait cirros@$IP
+
+echo -ne "${txtblu}"
+echo "Attempting to ssh to $IP to run uname -a"
+ssh -txq cirros@$IP "uname -a ; /sbin/ifconfig"
+echo -ne "${txtrst}"

@@ -1,0 +1,30 @@
+#!/bin/bash
+
+source $(dirname $0)/common
+
+SYSPREP_OPTS=$(virt-sysprep --list-operations | grep \* | awk '{print $1}' | grep -v -e ssh-userdir -e script | xargs | tr ' ' ',')
+
+IMG_TYPE=$1
+test -z "$IMG_TYPE" && error "Please provide an image type: $IMG_TYPES"
+
+shift 1
+images=$@
+test -z $VMS_DIR && error "VMS_DIR is not set"
+test -z "$images" && error "Please provide an image name"
+
+test -f $VMS_DIR/zzz-$IMG_TYPE.img \
+    || error "$VMS_DIR/zzz-$IMG_TYPE.img not present"
+
+for image in $images; do
+    test -f $VMS_DIR/$image.img && sudo rm -i $VMS_DIR/$image.img
+    sudo virsh destroy $image 2> /dev/null
+done
+
+for image in $images; do
+    sudo qemu-img create -o backing_file=$VMS_DIR/zzz-$IMG_TYPE.img \
+        -f qcow2 $VMS_DIR/$image.img
+    sudo virt-sysprep --no-selinux-relabel --enable $SYSPREP_OPTS \
+	    --hostname $image -a $VMS_DIR/$image.img
+    ssh-clean $image
+done
+

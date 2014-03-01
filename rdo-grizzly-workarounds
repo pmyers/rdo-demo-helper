@@ -1,0 +1,5 @@
+#!/bin/bash
+
+echo -ne "${txtgrn}"
+echo "No RDO Grizzly workarounds!"
+echo -ne "${txtrst}"

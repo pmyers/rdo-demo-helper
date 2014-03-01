@@ -1,0 +1,29 @@
+[el6-openstack-icehouse]
+name=OpenStack Icehouse Repository for EL 6
+baseurl=http://repos.fedorapeople.org/repos/openstack/openstack-icehouse/epel-6
+enabled=0
+gpgcheck=0
+priority=98
+
+[el6-openstack-havana]
+name=OpenStack Havana Repository for EL 6
+baseurl=http://repos.fedorapeople.org/repos/openstack/openstack-havana/epel-6
+enabled=0
+gpgcheck=0
+priority=98
+
+[fedora-openstack-icehouse]
+name=OpenStack Icehouse Repository for Fedora
+baseurl=http://repos.fedorapeople.org/repos/openstack/openstack-icehouse/fedora-20
+enabled=0
+gpgcheck=0
+priority=98
+
+[fedora-openstack-havana]
+name=OpenStack Havana Repository for Fedora
+baseurl=http://repos.fedorapeople.org/repos/openstack/openstack-havana/fedora-19
+enabled=0
+gpgcheck=0
+priority=98
+
+

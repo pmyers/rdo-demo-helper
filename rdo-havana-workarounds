@@ -1,0 +1,17 @@
+#!/bin/bash
+
+source $(dirname $0)/common
+
+echo -ne "${txtred}"
+echo "Hack to disable selinux for Havana till policies are fixed"
+echo -ne "${txtrst}"
+sudo setenforce Permissive
+sudo sed -i 's/^SELINUX=.*/SELINUX=permissive/' /etc/selinux/config
+sudo getenforce
+
+#echo -ne "${txtred}"
+#echo "Installing python-httplib2 for bz# 1006278"
+#echo -ne "${txtrst}"
+#sudo yum install -y http://mirror.pnl.gov/epel/6/i386/epel-release-6-8.noarch.rpm
+#sudo yum install -y python-httplib2
+#sudo yum remove -y epel-release

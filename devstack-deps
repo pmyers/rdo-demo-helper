@@ -1,0 +1,29 @@
+bridge-utils curl dbus euca2ools git-core openssh-server openssl
+openssl-devel psmisc pylint python-setuptools python-unittest2
+python-virtualenv screen tar tcpdump unzip wget which gcc
+python-argparse python-devel python-eventlet python-greenlet
+python-lxml python-paste-deploy python-routes python-sqlalchemy
+python-wsgiref pyxattr python-greenlet libxslt-devel python-lxml
+python-paste python-paste-deploy python-paste-script python-routes
+python-sqlalchemy python-webob sqlite python-dateutil MySQL-python curl
+dnsmasq-utils ebtables gawk genisoimage iptables iputils kpartx
+libxml2-python numpy m2crypto parted polkit python-boto python-carrot
+python-cheetah python-eventlet python-feedparser python-gflags
+python-greenlet python-iso8601 python-kombu python-lockfile
+python-migrate python-mox python-paramiko python-paste
+python-paste-deploy python-qpid python-routes python-sqlalchemy
+python-suds python-tempita sqlite sudo vconfig iscsi-initiator-utils
+lvm2 genisoimage sysfsutils sg3_utils python-libguestfs lvm2
+scsi-target-utils qemu-img python-devel postgresql-devel
+iscsi-initiator-utils python-lxml numpy Django django-registration gcc
+pylint python-anyjson python-BeautifulSoup python-boto python-coverage
+python-dateutil python-eventlet python-greenlet python-httplib2
+python-kombu python-migrate python-mox python-nose python-paste
+python-paste-deploy python-routes python-sphinx python-sqlalchemy
+python-webob pyxattr libxslt-devel 
+rabbitmq-server
+mysql-server
+kvm
+libvirt
+libvirt-python
+httpd mod_wsgi

@@ -1,0 +1,126 @@
+#!/bin/bash
+
+echo "Fix eth0 to be static"
+cat <<EOF > etc/sysconfig/network-scripts/ifcfg-eth0
+DEVICE=eth0
+BOOTPROTO=static
+IPADDR=192.168.100.2
+NETMASK=255.255.255.0
+GATEWAY=192.168.100.1
+ONBOOT=yes
+EOF
+
+echo "nameserver 192.168.100.1" > etc/resolv.conf
+
+echo "Before disable of cloud-init"
+chroot . chkconfig --list 2> /dev/null | grep cloud-init
+chroot . chkconfig --level 2345 cloud-init off
+chroot . chkconfig --level 2345 sendmail off
+echo "After disable of cloud-init"
+chroot . chkconfig --list 2> /dev/null | grep cloud-init
+
+chroot . useradd admin -G wheel
+echo "password" | chroot . passwd admin --stdin
+
+rsync -v ~/.ssh/authorized_keys home/admin/.ssh/
+rsync -v ~/.ssh/authorized_keys root/.ssh/
+
+chroot . chown -R admin /home/admin/.ssh
+chroot . chmod go-rw /home/admin/.ssh
+chroot . chmod go-rw /root/.ssh
+
+echo "admin ALL=(ALL) NOPASSWD: ALL" >> etc/sudoers
+chroot . visudo -c
+
+rsync -av etc/skel/ root
+
+if ! [ -e etc/pki/product/69.pem ]; then
+  mkdir -p etc/pki/product
+  cat <<EOL > etc/pki/product/69.pem
+-----BEGIN CERTIFICATE-----
+MIIGDTCCA/WgAwIBAgIJALDxRLt/tUzAMA0GCSqGSIb3DQEBBQUAMIGuMQswCQYD
+VQQGEwJVUzEXMBUGA1UECAwOTm9ydGggQ2Fyb2xpbmExFjAUBgNVBAoMDVJlZCBI
+YXQsIEluYy4xGDAWBgNVBAsMD1JlZCBIYXQgTmV0d29yazEuMCwGA1UEAwwlUmVk
+IEhhdCBFbnRpdGxlbWVudCBQcm9kdWN0IEF1dGhvcml0eTEkMCIGCSqGSIb3DQEJ
+ARYVY2Etc3VwcG9ydEByZWRoYXQuY29tMB4XDTEzMDQyNDEzMTgzOFoXDTMzMDQx
+OTEzMTgzOFowRDFCMEAGA1UEAww5UmVkIEhhdCBQcm9kdWN0IElEIFs4MmQ4YWE0
+Yy1iNGFlLTQyOTMtODUyNi0wNmU4YmQ5ZGYzZjBdMIICIjANBgkqhkiG9w0BAQEF
+AAOCAg8AMIICCgKCAgEAxj9J04z+Ezdyx1U33kFftLv0ntNS1BSeuhoZLDhs18yk
+sepG7hXXtHh2CMFfLZmTjAyL9i1XsxykQpVQdXTGpUF33C2qBQHB5glYs9+d781x
+8p8m8zFxbPcW82TIJXbgW3ErVh8vk5qCbG1cCAAHb+DWMq0EAyy1bl/JgAghYNGB
+RvKJObTdCrdpYh02KUqBLkSPZHvo6DUJFN37MXDpVeQq9VtqRjpKLLwuEfXb0Y7I
+5xEOrR3kYbOaBAWVt3mYZ1t0L/KfY2jVOdU5WFyyB9PhbMdLi1xE801j+GJrwcLa
+xmqvj4UaICRzcPATP86zVM1BBQa+lilkRQes5HyjZzZDiGYudnXhbqmLo/n0cuXo
+QBVVjhzRTMx71Eiiahmiw+U1vGqkHhQNxb13HtN1lcAhUCDrxxeMvrAjYdWpYlpI
+yW3NssPWt1YUHidMBSAJ4KctIf91dyE93aStlxwC/QnyFsZOmcEsBzVCnz9GmWMl
+1/6XzBS1yDUqByklx0TLH+z/sK9A+O2rZAy1mByCYwVxvbOZhnqGxAuToIS+A81v
+5hCjsCiOScVB+cil30YBu0cH85RZ0ILNkHdKdrLLWW4wjphK2nBn2g2i3+ztf+nQ
+ED2pQqZ/rhuW79jcyCZl9kXqe1wOdF0Cwah4N6/3LzIXEEKyEJxNqQwtNc2IVE8C
+AwEAAaOBljCBkzAJBgNVHRMEAjAAMDAGCysGAQQBkggJAUUBBCEMH1JlZCBIYXQg
+RW50ZXJwcmlzZSBMaW51eCBTZXJ2ZXIwFAYLKwYBBAGSCAkBRQIEBQwDNi41MBcG
+CysGAQQBkggJAUUDBAgMBng4Nl82NDAlBgsrBgEEAZIICQFFBAQWDBRyaGVsLTYs
+cmhlbC02LXNlcnZlcjANBgkqhkiG9w0BAQUFAAOCAgEAcv8OiJ+F1jNIf0vXcJNT
+rdXPhiu+c7dymOd7n5HRJgkRAHtvdQ3x41ASuqrhzVegb8wb0QM46GPXTrtqRaKM
+YFohCmV6AK+XwBxz4WCPUIPPJdZEBq+rQ2qW5lv+ZaqSF0/jtiphWWucyINeookl
+TZQhcvAogOBB9jwXfpvQ6ETL33A70Xxg98mJdFB0BO0E4RQ9DkAWExOyoE4rc3xw
+mZN4KZCcF8i79QKVHIIeiJbQ+Odv9XU5UwFw0hKfc6rQktBioQ79NtGNLqkhhNb/
+MxzWqX6YqNyQWXUEH8zExNe+xXXMffmzwIYRm/Z6xlg+ew044V2Ul+FVvcFLTfiB
+gYp2xKJJRBjz67Zerwdf5z10xoolIWyHQiCNqwB3jWX/tClr4gFpZckp4HjsewDq
+8yfzspj2DLhNzDUNpMbhNGpHWAUFfVwToG+NAxr8YQUQfUCFSTbqavlDutVzlucA
+OW28NgXweBUf47ZLsRy5cXBZbywf2pCS96RRJOHAEOr/4Imqcz/MFpR8lAntMAhz
+d6EnIQZyS1d5R6no9xHR5D5eq/A80McVEHonjvxkSoHnSpMViGL8hhAwrSZ/pW3h
+E4HiBeGq75kZ/YefAWfAGKCVuNb3PsKoeYMMVClIU8b2Fu3cffY8Z6Km82aztU7Y
+da9TmMUD1mGm4zQ74Z3+K7k=
+-----END CERTIFICATE-----
+EOL
+fi
+
+cat <<EOL > etc/yum.repos.d/rhel6.repo
+[rhos-4.0]
+name=rhos-4.0
+naseurl=http://download.devel.redhat.com/rel-eng/OpenStack/4.0/latest/RHOS-4.0/x86_64/os/
+enabled=0
+gpgcheck=0
+
+[released-RHEL-6-Server]
+name=released/RHEL-6/Server
+baseurl=http://download.devel.redhat.com/released/RHEL-6/6.5/Server/x86_64/os/Server
+enabled=1
+gpgcheck=0
+
+[released-RHEL-6-Server-opt]
+name=released/RHEL-6/Server-opt
+baseurl=http://download.devel.redhat.com/released/RHEL-6/6.5/Server/optional/x86_64/os
+enabled=1
+gpgcheck=0
+
+[released-RHEL-6-Server-HighAvailability]
+name=released/RHEL-6/Server-HighAvailability
+baseurl=http://download.devel.redhat.com/released/RHEL-6/6.5/Server/x86_64/os/HighAvailability
+enabled=1
+gpgcheck=0
+
+[released-RHEL-6-Server-LoadBalancer]
+name=released/RHEL-6/Server-LoadBalancer
+baseurl=http://download.devel.redhat.com/released/RHEL-6/6.5/Server/x86_64/os/LoadBalancer
+enabled=1
+gpgcheck=0
+
+[rhel6.5.z]
+name=rhel6.5.z
+baseurl=http://download.devel.redhat.com/brewroot/repos/RHEL-6.5-Z-build/latest/x86_64
+enabled=1
+gpgcheck=0
+EOL
+
+cat <<EOL > etc/yum.repos.d/epel.repo
+[epel]
+name=Extra Packages for Enterprise Linux 6 - $basearch
+#baseurl=http://download.fedoraproject.org/pub/epel/6/$basearch
+mirrorlist=https://mirrors.fedoraproject.org/metalink?repo=epel-6&arch=x86_64
+failovermethod=priority
+enabled=0
+gpgcheck=0
+EOL
+
+echo "Done"

@@ -1,0 +1,7 @@
+#!/bin/bash
+
+sudo sed -i 's/#ovs_use_veth/ovs_use_veth/' /etc/quantum/l3_agent.ini
+sudo sed -i 's/#ovs_use_veth/ovs_use_veth/' /etc/quantum/dhcp_agent.ini
+
+sudo /etc/init.d/quantum-l3-agent restart
+sudo /etc/init.d/quantum-dhcp-agent restart

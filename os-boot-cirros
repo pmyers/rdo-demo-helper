@@ -1,0 +1,8 @@
+#!/bin/bash
+
+nova flavor-list
+nova image-list
+
+nova boot --flavor m1.tiny --image my-cirros --key-name my-key my-cirros-inst
+
+nova list

@@ -1,0 +1,35 @@
+#!/bin/bash
+
+source $(dirname $0)/common
+
+HOST=$1
+test -z "$HOST" && error "Please provide an hostname"
+
+sudo umount -l /mnt/$HOST > /dev/null 2>&1
+
+fedora-gen-images $HOST || exit 1
+sudo virsh start $HOST || exit 1
+sshwait $HOST
+
+$ssh $HOST cd rdo-demo-helper && git pull
+
+# Note: Remove libxslt-devel from this once devstack dependencies are fixed
+$ssh $HOST sudo rm -f /etc/yum.repos.d/epel.repo
+
+$ssh $HOST 'echo "/ *(insecure,insecure_locks,rw,no_root_squash,async)" | sudo tee /etc/exports'
+sleepwait 2
+$ssh $HOST sudo service nfs-server restart
+sleepwait 2
+sudo mount /mnt/$HOST
+
+$ssh $HOST git clone https://github.com/openstack-dev/devstack.git
+
+rm -f ~/devel/os/devstack/*.patch
+git -C ~/devel/os/devstack format-patch origin
+scp ~/devel/os/devstack/*.patch $HOST:devstack
+rm -v ~/devel/os/devstack/*.patch
+ssh -x $HOST "cd devstack ; git am *.patch"
+
+$ssh $HOST 'cp -v etc/devstack-localrc devstack/localrc'
+read -p "Press a key to start devstack..."
+$ssh $HOST 'run-stack'

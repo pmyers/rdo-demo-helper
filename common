@@ -1,0 +1,102 @@
+#!/bin/bash
+
+IMG_TYPES="rhel-6 fedora-20"
+
+ssh="ssh -txq"
+
+txtund=$(tput sgr 0 1 2> /dev/null)    # Underline
+txtbld=$(tput bold 2> /dev/null)       # Bold
+txtred=$(tput setaf 1 2> /dev/null)    # Red
+txtgrn=$(tput setaf 2 2> /dev/null)    # Green
+txtylw=$(tput setaf 3 2> /dev/null)    # Yellow
+txtblu=$(tput setaf 4 2> /dev/null)    # Blue
+txtpur=$(tput setaf 5 2> /dev/null)    # Purple
+txtcyn=$(tput setaf 6 2> /dev/null)    # Cyan
+txtwht=$(tput setaf 7 2> /dev/null)    # White
+txtrst=$(tput sgr0 2> /dev/null)       # Text reset
+
+do_die() {
+    echo -e "${txtrst}"
+    if ! [ -z "$(jobs)" ]; then
+        kill %1
+    fi
+
+    echo "Exiting on user request"
+    exit 1
+}
+
+# trap keyboard interrupt (control-c)
+trap do_die SIGINT SIGTERM SIGQUIT
+
+ssh-clean() {
+    ssh-keygen -R $1 2> /dev/null
+    ip=$(gethostip -d $1)
+    test -n "$ip" && ssh-keygen -R $ip 2> /dev/null
+}
+
+error() {
+    echo "${txtred}$1${txtrst}"
+    exit 1
+}
+
+waitkey() {
+    echo
+    echo -ne "${txtblu}"
+    echo $1
+    echo -ne "${txtgrn}"
+    read -p "Press any key to continue... " -n1 -s
+    echo -ne "${txtrst}"
+    echo
+}
+
+sleepwait() {
+    echo -ne "${txtblu}"
+    echo -n "Sleeping"
+    for i in `seq 1 $1`; do
+        echo -n "."
+        sleep 1
+    done
+    echo " Done"
+    echo -ne "${txtrst}"
+}
+
+pingwait() {
+    local host=$(echo $1 | cut -d'@' -f2)
+    
+    echo -ne "${txtred}"
+    echo -n "Ping waiting for $host."
+
+    until ping -c 1 $host > /dev/null 2>&1; do
+        echo -n "."
+        sleep 1
+    done
+
+    echo -ne "${txtgrn}"
+    echo " $host is up!"
+    echo -ne "${txtrst}"
+}
+
+sshwait() {
+    local host=$1
+
+    pingwait $host
+    echo -ne "${txtred}"
+    echo -n "SSH waiting for $host."
+
+    until ssh -txq $host uptime > /dev/null 2>&1; do
+        echo -n "."
+        sleep 1
+    done
+
+    echo -ne "${txtgrn}"
+    echo " $host is up!"
+    echo -ne "${txtrst}"
+}
+
+addhost() {
+    local host=$1
+    local ip=$2
+
+    sudo sed -i -e /$host/d -e /$ip/d /etc/hosts
+    echo -e "$ip\t\t$host" | sudo tee -a /etc/hosts
+}

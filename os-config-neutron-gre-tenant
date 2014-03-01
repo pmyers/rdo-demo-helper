@@ -1,0 +1,7 @@
+#!/bin/bash
+
+neutron net-create int
+neutron subnet-create --name int int 10.0.0.0/24
+neutron router-create router1
+neutron router-interface-add router1 int
+neutron router-gateway-set router1 external

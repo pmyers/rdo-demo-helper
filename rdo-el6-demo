@@ -1,0 +1,54 @@
+#!/bin/bash
+
+source $(dirname $0)/common
+
+REL=$1
+test -z "$REL" && REL=icehouse
+
+FIP=192.168.100.101
+
+$ssh r6m "cd rdo-demo-helper && git pull 2> /dev/null"
+$ssh r6c1 "cd rdo-demo-helper && git pull 2> /dev/null"
+
+waitkey "Setting up Keystone Users"
+$ssh r6m ". keystonerc_admin && os-create-tenant"
+
+waitkey "Importing Fedora Guest Image"
+$ssh r6m ". keystonerc_admin && os-import-fedora fedora-guest.img"
+waitkey "Importing Cirros Guest Image"
+$ssh r6m ". keystonerc_admin && os-import-cirros"
+
+waitkey "Setting up External Bridge"
+$ssh r6m "os-setup-brex"
+waitkey "Setting up External Bridge in Neutron"
+$ssh r6m ". keystonerc_admin && os-config-neutron-gre"
+waitkey "Setting up Tenant Network"
+$ssh r6m ". keystonerc_demo && os-config-neutron-gre-tenant"
+waitkey "Open Security Groups"
+$ssh r6m ". keystonerc_demo && os-sec-open"
+
+waitkey "Importing SSH Key"
+$ssh r6m ". keystonerc_demo && os-import-key"
+
+waitkey "Booting Instance"
+$ssh r6m ". keystonerc_demo && os-boot-cirros"
+
+waitkey "Associating Floating IP"
+$ssh r6m ". keystonerc_demo && os-create-floating-ip my-cirros-inst"
+
+waitkey "Waiting for Instance"
+sshwait cirros@$FIP
+
+waitkey "Set up Cinder Volume"
+$ssh r6m ". keystonerc_demo && os-create-cinder my-cirros-inst"
+
+waitkey "Mount Cinder Volume in Guest"
+$ssh cirros@$FIP "sudo /usr/sbin/mkfs.ext4 /dev/vdb"
+$ssh cirros@$FIP "sudo mkdir -p /mnt/volume"
+$ssh cirros@$FIP "sudo mount /dev/vdb /mnt/volume"
+$ssh cirros@$FIP "df -h"
+$ssh cirros@$FIP "sudo touch /mnt/volume/test.txt"
+$ssh cirros@$FIP "sudo unmount /mnt/volume"
+
+waitkey "Swift Demo"
+$ssh r6m ". keystonerc_admin && os-demo-swift"

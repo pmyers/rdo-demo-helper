@@ -1,0 +1,24 @@
+#!/bin/bash
+
+source $(dirname $0)/common
+
+waitkey "swift stat"
+swift stat
+
+waitkey "swift list"
+swift list
+
+waitkey "swift upload"
+swift upload test keystonerc_admin
+
+waitkey "swift list"
+swift list
+
+waitkey "swift list test"
+swift list test
+
+waitkey "swift upload test update"
+swift upload test /etc/motd
+
+waitkey "swift list test"
+swift list test

@@ -1,0 +1,4 @@
+#!/bin/bash
+
+pushd ~/devstack
+./stack.sh 2>&1 | tee stack.log

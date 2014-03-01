@@ -1,0 +1,50 @@
+#!/bin/bash
+
+source $(dirname $0)/common
+
+REL=$1
+test -z "$REL" && REL=icehouse
+
+ans="packstack-rdo-${REL}.ans"
+
+r6-gen-images r6m r6c1
+
+sudo virsh start r6m
+sudo virsh start r6c1
+
+sshwait r6m
+sshwait r6c1
+
+$ssh r6m "cd rdo-demo-helper && git pull 2> /dev/null"
+$ssh r6m "root-ssh-setup"
+$ssh r6c1 "cd rdo-demo-helper && git pull 2> /dev/null"
+$ssh r6c1 "root-ssh-setup"
+
+$ssh r6m "rdo-release $REL"
+
+sleepwait 10
+
+$ssh r6m "sudo reboot"
+$ssh r6c1 "sudo reboot"
+
+sleepwait 15
+sshwait r6m
+sshwait r6c1
+
+echo -ne "${txtblu}"
+$ssh r6m "uname -a"
+$ssh r6c1 "uname -a"
+echo -ne "${txtrst}"
+
+$ssh r6m "sudo -E gen-static-ifcfg eth1 192.168.101.2"
+$ssh r6m "sudo ifup eth1"
+$ssh r6c1 "sudo -E gen-static-ifcfg eth1 192.168.101.2"
+$ssh r6c1 "sudo ifup eth1"
+
+$ssh r6m "sudo yum-config-manager --enable epel"
+$ssh r6m "ssh r6c1 uname -a"
+$ssh r6m "packstack --answer-file=etc/$ans"
+
+$ssh r6m "rdo-${REL}-workarounds"
+
+scp ~/vms/bak/fedora-guest.img r6m:.

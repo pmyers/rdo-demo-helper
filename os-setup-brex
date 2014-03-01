@@ -1,0 +1,30 @@
+#!/bin/bash
+
+source $(dirname $0)/common
+
+netscripts=/etc/sysconfig/network-scripts
+
+waitkey "Press enter to change/display ifcfg-eth0"
+cat <<EOF | sudo tee $netscripts/ifcfg-eth0
+DEVICE=eth0
+BOOTPROTO=static
+ONBOOT=yes
+EOF
+
+waitkey "Press enter to change/display ifcfg-br-ex"
+cat <<EOF | sudo tee $netscripts/ifcfg-br-ex
+DEVICE=br-ex
+BOOTPROTO=static
+IPADDR=$(ifconfig eth0 | sed -n 's/.*dr:\(.*\) Bc.*/\1/p')
+NETMASK=$(ifconfig eth0 | sed -rn '2s/ .*:(.*)$/\1/p')
+GATEWAY=$(ip route | awk '/default/ { print $3 }')
+ONBOOT=yes
+EOF
+
+waitkey "Press enter to run ovs-vsctl add-port"
+sudo ovs-vsctl add-port br-ex eth0 && sudo service network restart
+
+waitkey "Press enter to run ovs-vsctl show"
+sudo ovs-vsctl show
+
+

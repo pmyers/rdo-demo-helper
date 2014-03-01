@@ -1,0 +1,8 @@
+#!/bin/bash
+
+nova flavor-list
+mova image-list
+
+nova boot --flavor m1.small --image my-fedora --key-name my-key my-fedora-inst
+
+nova list

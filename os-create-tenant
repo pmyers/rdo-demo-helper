@@ -1,0 +1,30 @@
+#!/bin/bash
+
+source $(dirname $0)/common
+
+keystone user-create --name demo --pass password
+keystone role-create --name demo-role
+keystone tenant-create --name demo-tenant
+
+keystone user-role-add --user-id demo --role-id demo-role \
+    --tenant-id demo-tenant
+
+waitkey
+keystone user-list
+waitkey
+keystone role-list
+waitkey
+keystone tenant-list
+waitkey
+keystone user-role-list
+waitkey
+keystone endpoint-list
+
+cat <<EOF > keystonerc_demo
+export OS_USERNAME=demo
+export OS_TENANT_NAME=demo-tenant
+export OS_PASSWORD=password
+export OS_AUTH_URL=$OS_AUTH_URL
+export PS1='[\u@\h \W(keystone_demo)]\$ '
+EOF
+
