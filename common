@@ -1,6 +1,7 @@
 #!/bin/bash
 
 IMG_TYPES="rhel-6 fedora-20"
+SUBS="rhel-6:100 fedora-20:101"
 
 ssh="ssh -txq"
 
@@ -43,7 +44,7 @@ waitkey() {
     echo
     echo -ne "${txtblu}"
     echo $1
-    echo -ne "${txtgrn}"
+    echo -ne "${txtcya}"
     read -p "Press any key to continue... " -n1 -s
     echo -ne "${txtrst}"
     echo
@@ -63,7 +64,7 @@ sleepwait() {
 pingwait() {
     local host=$(echo $1 | cut -d'@' -f2)
     
-    echo -ne "${txtred}"
+    echo -ne "${txtpur}"
     echo -n "Ping waiting for $host."
 
     until ping -c 1 $host > /dev/null 2>&1; do
@@ -71,7 +72,7 @@ pingwait() {
         sleep 1
     done
 
-    echo -ne "${txtgrn}"
+    echo -ne "${txtblu}"
     echo " $host is up!"
     echo -ne "${txtrst}"
 }
@@ -80,7 +81,7 @@ sshwait() {
     local host=$1
 
     pingwait $host
-    echo -ne "${txtred}"
+    echo -ne "${txtpur}"
     echo -n "SSH waiting for $host."
 
     until ssh -txq $host uptime > /dev/null 2>&1; do
@@ -88,7 +89,7 @@ sshwait() {
         sleep 1
     done
 
-    echo -ne "${txtgrn}"
+    echo -ne "${txtblu}"
     echo " $host is up!"
     echo -ne "${txtrst}"
 }
@@ -99,4 +100,32 @@ addhost() {
 
     sudo sed -i -e /$host/d -e /$ip/d /etc/hosts
     echo -e "$ip\t\t$host" | sudo tee -a /etc/hosts
+}
+
+getsub() {
+    local type=$1
+    local sub=$(echo $SUBS | tr ' ' '\n' | grep $type | cut -d":" -f2)
+    echo $sub
+}
+
+foreach_host() {
+    local type=$1
+    local count=$2
+    local command=$3
+
+    for i in `seq 1 $count`; do
+        image="${type}$i"
+        $command $image
+    done
+}
+
+foreach_hostssh() {
+    local type=$1
+    local count=$2
+    local command=$3
+
+    for i in `seq 1 $count`; do
+        image="${type}$i"
+        $ssh $image $command
+    done
 }

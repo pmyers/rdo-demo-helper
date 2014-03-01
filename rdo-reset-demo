@@ -1,0 +1,12 @@
+#!/bin/bash
+
+srcdir=$(readlink -m $(dirname $0))
+source $srcdir/common
+
+TYPE=$1
+NUM=$2
+
+test -z "$TYPE" && error "Please provide an image type: $IMG_TYPES"
+test -z "$NUM" && NUM=1
+
+foreach_host $TYPE $NUM "sudo virsh destroy"

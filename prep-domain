@@ -1,74 +1,69 @@
 #!/bin/bash
 
 srcdir=$(readlink -m $(dirname $0))
-
 source $srcdir/common
 
 SYSPREP_OPTS=$(virt-sysprep --list-operations | grep \* | awk '{print $1}' | grep -v -e ssh-userdir | xargs | tr ' ' ',')
 VIRSH="sudo virsh"
 
-IMG_TYPE=$1
+TYPE=$1
+
 test -z $VMS_DIR && error "VMS_DIR is not set"
-test -z "$IMG_TYPE" && error "Please provide an image type: $IMG_TYPES"
+test -z "$TYPE" && error "Please provide an image type: $IMG_TYPES"
 
-vm=zzz-$IMG_TYPE
+vm=zzz-$TYPE
 
-addhost $vm 192.168.100.2
+sub=$(getsub $TYPE)
+ipaddr=192.168.$sub.100
+addhost $vm $ipaddr
+mac=$(grep "192.168.@SUB@.100" $srcdir/net-mgmt \
+    | sed 's/.*mac="\(.*\)" name=.*/\1/')
+[ -n "$mac" ] && macopt=",mac=$mac"
 
 {
     $VIRSH destroy $vm
     $VIRSH undefine $vm
-    $VIRSH net-info $IMG_TYPE-mgmt && $VIRSH net-destroy $IMG_TYPE-mgmt && \
-        $VIRSH net-undefine $IMG_TYPE-mgmt
-    $VIRSH net-info $IMG_TYPE-priv && $VIRSH net-destroy $IMG_TYPE-priv && \
-        $VIRSH net-undefine $IMG_TYPE-priv
-} 2> /dev/null
+    $VIRSH net-destroy $TYPE-mgmt && $VIRSH net-undefine $TYPE-mgmt
+    $VIRSH net-destroy $TYPE-priv && $VIRSH net-undefine $TYPE-priv
+
+    foreach_host $TYPE 10 "sudo virsh destroy"
+    foreach_host $TYPE 10 "sudo virsh undefine"
+} > /dev/null 2>&1
 
 tmp=$(mktemp)
 
-sed "s/@NAME@/$IMG_TYPE/" $srcdir/net-mgmt > $tmp
+sed -e "s/@NAME@/$TYPE/g" -e "s/@SUB@/$sub/g" $srcdir/net-mgmt > $tmp
 $VIRSH net-define $tmp
 
-sed "s/@NAME@/$IMG_TYPE/" $srcdir/net-priv > $tmp
+sed "s/@NAME@/$TYPE/g" $srcdir/net-priv > $tmp
 $VIRSH net-define $tmp
 
-$VIRSH net-start $IMG_TYPE-mgmt
-$VIRSH net-autostart $IMG_TYPE-mgmt
-$VIRSH net-start $IMG_TYPE-priv
-$VIRSH net-autostart $IMG_TYPE-priv
+$VIRSH net-start $TYPE-mgmt
+$VIRSH net-autostart $TYPE-mgmt
+$VIRSH net-start $TYPE-priv
+$VIRSH net-autostart $TYPE-priv
 
 rm -f $tmp
 
-if [ "$IMG_TYPE" == "rhel-6" ]; then
-    IMPORT_IMG=$VMS_DIR/bak/$IMG_TYPE-guest.img
+if [ "$TYPE" == "rhel-6" ]; then
+    IMPORT_IMG=$VMS_DIR/bak/$TYPE-guest.img
     test -f $IMPORT_IMG || error "$IMPORT_IMG not present"
 
     sudo chown $USER $VMS_DIR/$vm.img 2> /dev/null
     rsync -LavP $IMPORT_IMG $VMS_DIR/$vm.img
-  
-    # NOTE: This virt-resize was needed with older RHEL Guest images that
-    #       were too small.  Default size of these images is now 15G which
-    #       is sufficient
-
-    #rm -f $vm-tmp.img
-    #qemu-img create -f qcow2 \
-    #    -o preallocation=metadata $VMS_DIR/$vm-tmp.img 20G
-    #sudo virt-resize --expand /dev/sda1 $VMS_DIR/$vm.img \
-    #    $VMS_DIR/$vm-tmp.img
-    #mv -f $VMS_DIR/$vm-tmp.img $VMS_DIR/$vm.img    
 else 
     virt-builder --hostname $vm --format qcow2 \
-        --root-password password:password --size 15 --update $IMG_TYPE
+        --root-password password:password --size 15 --update $TYPE
 fi
 
 sudo virt-sysprep --enable $SYSPREP_OPTS \
     --root-password password:password \
-    --script $srcdir/sysprep-$IMG_TYPE \
-    --firstboot $srcdir/firstboot-$IMG_TYPE \
+    --script $srcdir/sysprep-$TYPE \
+    --firstboot $srcdir/firstboot-$TYPE \
     -a $VMS_DIR/$vm.img
 
 sudo virt-install -n $vm -r 2048 --vcpus 2 --noautoconsole \
-    -w network=$IMG_TYPE-mgmt -w network=$IMG_TYPE-priv \
+    -w network=$TYPE-mgmt$macopt -w network=$TYPE-priv \
     --import --disk path=$VMS_DIR/$vm.img
 
 ssh-clean $vm
@@ -78,7 +73,7 @@ sshwait admin@$vm
 $ssh admin@$vm sudo yum install yum deltarpm -y
 $ssh admin@$vm sudo yum update -y
 
-if [ $(echo $IMG_TYPE | grep -e rhel -e centos) ]; then
+if [ $(echo $TYPE | grep -e rhel -e centos) ]; then
     $ssh admin@$vm sudo yum install --enablerepo=epel git-all -y
 else
     $ssh admin@$vm sudo yum install git-all -y
@@ -90,3 +85,5 @@ $ssh admin@$vm sudo yum install nfs-utils emacs-color-theme fpaste \
 $ssh admin@$vm git clone https://github.com/pmyers/rdo-demo-helper.git
 
 $ssh admin@$vm sudo yum install $(cat $srcdir/devstack-deps | xargs) -y
+
+$ssh admin@$vm "echo 'export PATH=$PATH:~/rdo-demo-helper' >> .bashrc"

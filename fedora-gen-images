@@ -1,3 +1,0 @@
-#!/bin/bash
-
-gen-image fedora-20 $@

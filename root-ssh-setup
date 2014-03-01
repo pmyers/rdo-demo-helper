@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 sudo mkdir -p /root/.ssh
 sudo cp ~/.ssh/authorized_keys /root/.ssh

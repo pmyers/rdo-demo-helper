@@ -1,30 +1,44 @@
 #!/bin/bash
 
-source $(dirname $0)/common
+srcdir=$(readlink -m $(dirname $0))
+source $srcdir/common
 
 SYSPREP_OPTS=$(virt-sysprep --list-operations | grep \* | awk '{print $1}' | grep -v -e ssh-userdir -e script | xargs | tr ' ' ',')
 
-IMG_TYPE=$1
-test -z "$IMG_TYPE" && error "Please provide an image type: $IMG_TYPES"
+TYPE=$1
+num_hosts=$2
 
-shift 1
-images=$@
+test -z "$TYPE" && error "Please provide an image type: $IMG_TYPES"
 test -z $VMS_DIR && error "VMS_DIR is not set"
-test -z "$images" && error "Please provide an image name"
+test -f $VMS_DIR/zzz-$TYPE.img \
+    || error "$VMS_DIR/zzz-$TYPE.img not present"
 
-test -f $VMS_DIR/zzz-$IMG_TYPE.img \
-    || error "$VMS_DIR/zzz-$IMG_TYPE.img not present"
+sub=$(getsub $TYPE)
+[ -z "$num_hosts" ] && num_hosts=1
 
-for image in $images; do
-    test -f $VMS_DIR/$image.img && sudo rm -i $VMS_DIR/$image.img
+for i in `seq 1 $num_hosts`; do
+    image="${TYPE}$i"
+    ip="$(( $i + 100))"
+    addhost $image 192.168.$sub.$ip
+
+    mac=$(grep "192.168.@SUB@.$ip" $srcdir/net-mgmt \
+        | sed 's/.*mac="\(.*\)" name=.*/\1/')
+    [ -n "$mac" ] && macopt=",mac=$mac"
+
     sudo virsh destroy $image 2> /dev/null
-done
+    sudo virsh undefine $image 2> /dev/null
+    test -f $VMS_DIR/$image.img && sudo rm -f $VMS_DIR/$image.img
 
-for image in $images; do
-    sudo qemu-img create -o backing_file=$VMS_DIR/zzz-$IMG_TYPE.img \
+    sudo qemu-img create -o backing_file=$VMS_DIR/zzz-$TYPE.img \
         -f qcow2 $VMS_DIR/$image.img
+
     sudo virt-sysprep --no-selinux-relabel --enable $SYSPREP_OPTS \
 	    --hostname $image -a $VMS_DIR/$image.img
+
+    sudo virt-install -n $image -r 4096 --vcpus 2 --noautoconsole \
+        -w network=$TYPE-mgmt$macopt -w network=$TYPE-priv \
+        --noreboot --import --disk path=$VMS_DIR/$image.img
+
     ssh-clean $image
 done
 

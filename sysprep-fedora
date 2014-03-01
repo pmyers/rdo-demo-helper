@@ -1,17 +1,5 @@
 #!/bin/bash
 
-echo "Fix eth0 to be static"
-cat <<EOF > etc/sysconfig/network-scripts/ifcfg-eth0
-DEVICE=eth0
-BOOTPROTO=static
-IPADDR=192.168.100.2
-NETMASK=255.255.255.0
-GATEWAY=192.168.100.1
-ONBOOT=yes
-EOF
-
-echo "nameserver 192.168.100.1" > etc/resolv.conf
-
 rsync -v ~/.ssh/authorized_keys root/.ssh/
 
 echo "Done"

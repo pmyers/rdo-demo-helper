@@ -5,6 +5,14 @@
       <port start='1024' end='65535'/>
     </nat>
   </forward>
-  <ip address='192.168.100.1' netmask='255.255.255.0'>
+  <ip address='192.168.@SUB@.1' netmask='255.255.255.0'>
+    <dhcp>
+       <range start="192.168.@SUB@.200" end="192.168.@SUB@.250"/>
+       <host mac="00:16:3e:e2:ed:aa" name="zzz-@NAME@" ip="192.168.@SUB@.100"/>
+       <host mac="00:16:3e:e2:ed:ab" name="@NAME@1" ip="192.168.@SUB@.101"/>
+       <host mac="00:16:3e:e2:ed:ac" name="@NAME@2" ip="192.168.@SUB@.102"/>
+       <host mac="00:16:3e:e2:ed:ad" name="@NAME@3" ip="192.168.@SUB@.103"/>
+       <host mac="00:16:3e:e2:ed:ae" name="@NAME@4" ip="192.168.@SUB@.104"/>
+    </dhcp>
   </ip>
 </network>
