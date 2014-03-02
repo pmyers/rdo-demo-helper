@@ -1,5 +1,6 @@
-#!/bin/bash -v
+#!/bin/bash
 
+set -v
 neutron net-create external --provider:network_type local \
     --router:external true
 

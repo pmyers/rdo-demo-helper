@@ -1,4 +1,4 @@
-#!/bin/bash -v
+#!/bin/bash
 
 source $(dirname $0)/common
 
@@ -22,9 +22,12 @@ ONBOOT=yes
 EOF
 
 waitkey "Press enter to run ovs-vsctl add-port"
+set -v
 sudo ovs-vsctl add-port br-ex eth0 && sudo service network restart
+set +v
 
 waitkey "Press enter to run ovs-vsctl show"
+set -v
 sudo ovs-vsctl show
-
+set +v
 

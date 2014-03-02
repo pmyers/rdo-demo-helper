@@ -1,9 +1,15 @@
-#!/bin/bash -v
+#!/bin/bash
 
 source $(dirname $0)/common
 
 test -z "$1" && error "Please provide an instance id"
 
+set -v
 cinder create --display-name my-vol 1
+set +v
+
 id=$(nova volume-list | grep my-vol | awk -F '|' '{print $2}' | xargs)
+
+set -v
 nova volume-attach $1 $id auto
+set +v

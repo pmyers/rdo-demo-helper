@@ -14,7 +14,7 @@ test -z "$REL" && REL=icehouse
 sub=$(getsub $TYPE)
 FIP=192.168.$sub.200
 
-foreach_hostssh $TYPE $NUM "cd rdo-demo-helper && git pull 2> /dev/null"
+foreach_hostssh $TYPE $NUM "cd rdo-demo-helper && git pull" > /dev/null 2>&1
 
 waitkey "Setting up Keystone Users"
 $ssh ${TYPE}1 ". keystonerc_admin && os-create-tenant"

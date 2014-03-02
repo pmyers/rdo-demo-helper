@@ -1,24 +1,40 @@
-#!/bin/bash -v
+#!/bin/bash
 
 source $(dirname $0)/common
 
+set -v
 keystone user-create --name demo --pass password
 keystone role-create --name demo-role
 keystone tenant-create --name demo-tenant
 
 keystone user-role-add --user-id demo --role-id demo-role \
     --tenant-id demo-tenant
+set +v
 
 waitkey
+set -v
 keystone user-list
+set +v
+
 waitkey
+set -v
 keystone role-list
+set +v
+
 waitkey
+set -v
 keystone tenant-list
+set +v
+
 waitkey
+set -v
 keystone user-role-list
+set +v
+
 waitkey
+set -v
 keystone endpoint-list
+set +v
 
 cat <<EOF > keystonerc_demo
 export OS_USERNAME=demo

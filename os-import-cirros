@@ -1,7 +1,8 @@
-#!/bin/bash -v
+#!/bin/bash
 
 IMG=http://download.cirros-cloud.net/0.3.1/cirros-0.3.1-x86_64-disk.img
 
+set -v
 glance image-delete my-cirros
 glance image-create --name my-cirros --disk-format qcow2 \
     --container-format bare --copy-from $IMG --is-public True

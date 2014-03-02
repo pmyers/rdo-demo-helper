@@ -1,24 +1,38 @@
-#!/bin/bash -v
+#!/bin/bash
 
 source $(dirname $0)/common
 
 waitkey "swift stat"
+set -v
 swift stat
+set +v
 
 waitkey "swift list"
+set -v
 swift list
+set +v
 
 waitkey "swift upload"
+set -v
 swift upload test keystonerc_admin
+set +v
 
 waitkey "swift list"
+set -v
 swift list
+set +v
 
 waitkey "swift list test"
+set -v
 swift list test
+set +v
 
 waitkey "swift upload test update"
+set -v
 swift upload test /etc/motd
+set +v
 
 waitkey "swift list test"
+set -v
 swift list test
+set +v
