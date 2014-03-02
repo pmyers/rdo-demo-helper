@@ -1,12 +1,17 @@
 #!/bin/bash
 
+source $(dirname $0)/common
+
+sub=$1
+test -z "$sub" && error "Please provide a subnet"
+
 set -v
 neutron net-create external --provider:network_type local \
     --router:external true
 
-neutron subnet-create external 192.168.100.0/24 --disable-dhcp \
-    --allocation-pool start=192.168.100.100,end=192.168.100.150 \
-    --gateway=192.168.100.1
+neutron subnet-create external 192.168.$sub.0/24 --disable-dhcp \
+    --allocation-pool start=192.168.$sub.200,end=192.168.$sub.250 \
+    --gateway=192.168.$sub.1
 
 
 

@@ -29,7 +29,7 @@ $ssh $mgmt ". keystonerc_admin && os-import-cirros"
 waitkey "Setting up External Bridge"
 $ssh $mgmt "os-setup-brex"
 waitkey "Setting up External Bridge in Neutron"
-$ssh $mgmt ". keystonerc_admin && os-config-neutron-gre"
+$ssh $mgmt ". keystonerc_admin && os-config-neutron-gre $sub"
 waitkey "Setting up Tenant Network"
 $ssh $mgmt ". keystonerc_demo && os-config-neutron-gre-tenant"
 waitkey "Open Security Groups"
@@ -42,7 +42,7 @@ waitkey "Booting Instance"
 $ssh $mgmt ". keystonerc_demo && os-boot-cirros"
 
 waitkey "Associating Floating IP"
-$ssh $mgmt ". keystonerc_demo && os-create-floating-ip my-cirros-inst"
+$ssh $mgmt ". keystonerc_demo && os-create-floating-ip my-cirros-inst $FIP"
 
 waitkey "Waiting for Instance"
 sshwait cirros@$FIP

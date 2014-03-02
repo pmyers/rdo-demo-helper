@@ -2,9 +2,12 @@
 
 source $(dirname $0)/common
 
-test -z "$1" && error "Please provide an instance id"
+inst=$1
+fip=$2
+test -z "$inst" && error "Please provide an instance id"
+test -z "$fip" && error "Please provide an ip"
 
 set -v
 neutron floatingip-list
 neutron floatingip-create external
-nova add-floating-ip $1 192.168.100.101
+nova add-floating-ip $inst $fip
