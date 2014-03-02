@@ -42,27 +42,40 @@ git clone https://github.com/pmyers/rdo-demo-helper.git
 
 cd rdo-demo-helper
 
-./prep-domain rhel6
+./prep-domain centos6
 
-  This creates a zzz-rhel6 domain and image, that the other images will be
+  This creates a zzz-centos6 domain and image, that the other images will be
   based on.
 
-./rdo-demo-cache rhel6
+./rdo-demo-cache centos6
 
   This will populate the base image with all of the packages needed so that
   later runs of the scripts below don't have to access much over the internet
 
-./rdo-demo-prep rhel6 3
+./rdo-demo-prep centos6 3
 
   This will install packstack and run it on the first node.  The argument
-  after 'rhel6' indicates you want 3 virtual nodes in the cluster.  Node 1
+  after 'centos6' indicates you want 3 virtual nodes in the cluster.  Node 1
   is the controller, all 3 will be compute nodes.  Following this, you should
   have a running RDO install
 
-./rdo-demo rhel6 3
+./rdo-demo-save centos6 3
+
+  This can be called after you've installed RDO (via the demo-prep step above)
+  and will shut down all of the VMs gracefully and then back them up with a
+  .bak extension in the $VMS_DIR location.  Then later you can restore these
+  .bak files via:
+
+./rdo-demo-restore centos6 3
+
+./rdo-demo centos6 3
 
   This will execute an interactive demo that will print out the commands
   being used as well as show lots of CLI output.
+
+./rdo-demo-reset centos6 3
+
+  This just destroys all of the VMs to clean things up
 
 Notes:
 ------
@@ -74,7 +87,7 @@ Notes:
 TODO:
 -----
 
-* Try end to end install w/ CentOS 6
+* DONE: Try end to end install w/ CentOS 6
 * Try end to end install w/ Fedora 20
 * Try devstack install w/ Fedora 20
 * Try all-in-one installs with RHEL 6/CentOS 6/Fedora 20
