@@ -1,10 +1,11 @@
 #!/bin/bash
 
+img="cirros-0.3.1-x86_64-disk.img" 
 os-dl-cirros
 
 set -v
 glance image-delete my-cirros
 glance image-create --name my-cirros --disk-format qcow2 \
-    --container-format bare --copy-from $file --is-public True
+    --container-format bare --copy-from $img --is-public True
 
 glance image-list
