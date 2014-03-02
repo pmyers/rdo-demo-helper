@@ -64,6 +64,7 @@ sudo virt-sysprep --enable $SYSPREP_OPTS \
 
 sudo virt-install -n $vm -r 2048 --vcpus 2 --noautoconsole \
     -w network=$TYPE-mgmt$macopt -w network=$TYPE-priv \
+    --os-variant=$(osvariant $TYPE) \
     --import --disk path=$VMS_DIR/$vm.img
 
 ssh-clean $vm

@@ -129,3 +129,13 @@ foreach_hostssh() {
         $ssh $image $command
     done
 }
+
+osvariant() {
+    local type=$1
+    
+    type=$(echo $type | tr -d '-')
+
+    [ "$type" == "cirros6" ] && type="rhel6"
+
+    echo $type
+}

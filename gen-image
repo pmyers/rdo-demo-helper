@@ -16,6 +16,9 @@ test -f $VMS_DIR/zzz-$TYPE.img \
 sub=$(getsub $TYPE)
 [ -z "$num_hosts" ] && num_hosts=1
 
+sudo virsh shutdown zzz-$TYPE 2> /dev/null
+sleepwait 5
+
 for i in `seq 1 $num_hosts`; do
     image="${TYPE}$i"
     ip="$(( $i + 100))"
@@ -37,6 +40,7 @@ for i in `seq 1 $num_hosts`; do
 
     sudo virt-install -n $image -r 4096 --vcpus 2 --noautoconsole \
         -w network=$TYPE-mgmt$macopt -w network=$TYPE-priv \
+        --os-variant=$(osvariant $TYPE) \
         --noreboot --import --disk path=$VMS_DIR/$image.img
 
     ssh-clean $image

@@ -14,12 +14,12 @@ test -z "$SUB" && error "Please provide a subnet"
 test -z "$BASE" && error "Please provide a base answer file"
 
 cp -vf $BASE packstack.ans
-sed -i s/@MGMT@/192.168.$sub.101/ packstack.ans
+sed -i s/@MGMT@/192.168.$SUB.101/ packstack.ans
 
-computes="192.168.$sub.101"
-for i in `seq 2 $count`; do
+computes="192.168.$SUB.101"
+for i in `seq 2 $NUM`; do
     ip="$(( $i + 100))"
-    computes="$computes,192.168.$sub.$ip"
+    computes="$computes,192.168.$SUB.$ip"
 done
 
 sed -i s/@COMP@/$computes/ packstack.ans
