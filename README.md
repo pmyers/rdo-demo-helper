@@ -71,3 +71,16 @@ Notes:
 
 * rdo-deps includes openstack* and so openstack-nova-volume has to be 
   explicitly excluded so that it doesn't get pulled in
+
+TODO:
+-----
+
+* Try end to end install w/ CentOS 6
+* Try end to end install w/ Fedora 20
+* Try devstack install w/ Fedora 20
+* Try all-in-one installs with RHEL 6/CentOS 6/Fedora 20
+* Try RHEL 7
+* Figure out why Ceilometer doesn't install
+* Figure out why Savanna doesn't install
+* Experiment with running Foreman instead of Packstack
+* RHEL 6 images should use subscription-manager with provided login
