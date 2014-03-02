@@ -18,7 +18,9 @@ Prerequisites:
    this directory as a valid location for storing VM images
 
 2. If using RHEL, download RHEL Guest Image
+
    https://rhn.redhat.com/rhn/software/channel/downloads/Download.do?cid=16952
+
    A valid RHN login and RHEL 6 Server subscription is required.
 
    Place into $VMS_DIR/bak and name like:
@@ -37,22 +39,35 @@ Instructions:
 -------------
 
 git clone https://github.com/pmyers/rdo-demo-helper.git
+
 cd rdo-demo-helper
 
 ./prep-domain rhel6
+
   This creates a zzz-rhel6 domain and image, that the other images will be
   based on.
 
 ./rdo-demo-cache rhel6
+
   This will populate the base image with all of the packages needed so that
   later runs of the scripts below don't have to access much over the internet
 
 ./rdo-demo-prep rhel6 3
+
   This will install packstack and run it on the first node.  The argument
   after 'rhel6' indicates you want 3 virtual nodes in the cluster.  Node 1
   is the controller, all 3 will be compute nodes.  Following this, you should
   have a running RDO install
 
 ./rdo-demo rhel6 3
+
   This will execute an interactive demo that will print out the commands
   being used as well as show lots of CLI output.
+
+Notes:
+------
+
+* Ceilometer and Savanna are not currently installed due to packaging issues
+
+* rdo-deps includes openstack* and so openstack-nova-volume has to be 
+  explicitly excluded so that it doesn't get pulled in
