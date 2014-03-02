@@ -8,11 +8,16 @@
   <ip address='192.168.@SUB@.1' netmask='255.255.255.0'>
     <dhcp>
        <range start="192.168.@SUB@.200" end="192.168.@SUB@.250"/>
-       <host mac="00:16:3e:e2:ed:aa" name="zzz-@NAME@" ip="192.168.@SUB@.100"/>
-       <host mac="00:16:3e:e2:ed:ab" name="@NAME@1" ip="192.168.@SUB@.101"/>
-       <host mac="00:16:3e:e2:ed:ac" name="@NAME@2" ip="192.168.@SUB@.102"/>
-       <host mac="00:16:3e:e2:ed:ad" name="@NAME@3" ip="192.168.@SUB@.103"/>
-       <host mac="00:16:3e:e2:ed:ae" name="@NAME@4" ip="192.168.@SUB@.104"/>
+       <host mac="00:16:3e:e2:@MAC@:00" name="zzz-@NAME@" ip="192.168.@SUB@.100"/>
+       <host mac="00:16:3e:e2:@MAC@:01" name="@NAME@1" ip="192.168.@SUB@.101"/>
+       <host mac="00:16:3e:e2:@MAC@:02" name="@NAME@2" ip="192.168.@SUB@.102"/>
+       <host mac="00:16:3e:e2:@MAC@:03" name="@NAME@3" ip="192.168.@SUB@.103"/>
+       <host mac="00:16:3e:e2:@MAC@:04" name="@NAME@4" ip="192.168.@SUB@.104"/>
+       <host mac="00:16:3e:e2:@MAC@:05" name="@NAME@5" ip="192.168.@SUB@.105"/>
+       <host mac="00:16:3e:e2:@MAC@:06" name="@NAME@6" ip="192.168.@SUB@.106"/>
+       <host mac="00:16:3e:e2:@MAC@:07" name="@NAME@7" ip="192.168.@SUB@.107"/>
+       <host mac="00:16:3e:e2:@MAC@:08" name="@NAME@8" ip="192.168.@SUB@.108"/>
+       <host mac="00:16:3e:e2:@MAC@:09" name="@NAME@9" ip="192.168.@SUB@.109"/>
     </dhcp>
   </ip>
 </network>

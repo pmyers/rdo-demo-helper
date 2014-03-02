@@ -4,7 +4,6 @@ srcdir=$(readlink -m $(dirname $0))
 source $srcdir/common
 
 SYSPREP_OPTS=$(virt-sysprep --list-operations | grep \* | awk '{print $1}' | grep -v -e ssh-userdir | xargs | tr ' ' ',')
-VIRSH="sudo virsh"
 
 TYPE=$1
 
@@ -16,10 +15,14 @@ vm=zzz-$TYPE
 sub=$(getsub $TYPE)
 privsub=$(( $sub - 50 ))
 ipaddr=192.168.$sub.100
+
 addhost $vm $ipaddr
-mac=$(grep "192.168.@SUB@.100" $srcdir/net-mgmt \
-    | sed 's/.*mac="\(.*\)" name=.*/\1/')
+
+mac=$(grep "zzz-@NAME@" $srcdir/net-mgmt \
+    | sed 's/.*mac="\(.*\)" name=.*/\1/' | sed "s/@MAC@/$privsub/")
 [ -n "$mac" ] && macopt=",mac=$mac"
+
+refresh-storage-pools
 
 {
     $VIRSH destroy $vm
@@ -27,16 +30,18 @@ mac=$(grep "192.168.@SUB@.100" $srcdir/net-mgmt \
     $VIRSH net-destroy $TYPE-mgmt && $VIRSH net-undefine $TYPE-mgmt
     $VIRSH net-destroy $TYPE-priv && $VIRSH net-undefine $TYPE-priv
 
-    foreach_host $TYPE 10 "sudo virsh destroy"
-    foreach_host $TYPE 10 "sudo virsh undefine"
+    foreach_host $TYPE 10 "$VIRSH destroy"
+    foreach_host $TYPE 10 "$VIRSH undefine"
 } > /dev/null 2>&1
 
 tmp=$(mktemp)
-
-sed -e "s/@NAME@/$TYPE/g" -e "s/@SUB@/$sub/g" $srcdir/net-mgmt > $tmp
+sed -e "s/@NAME@/$TYPE/g" -e "s/@SUB@/$sub/g" -e "s/@MAC@/$privsub/g" \
+    $srcdir/net-mgmt > $tmp
 $VIRSH net-define $tmp
 
-sed -e "s/@NAME@/$TYPE/g" -e "s/@SUB@/$privsub/g" $srcdir/net-priv > $tmp
+tmp=$(mktemp)
+sed -e "s/@NAME@/$TYPE/g" -e "s/@SUB@/$privsub/g" \
+    $srcdir/net-priv > $tmp
 $VIRSH net-define $tmp
 
 $VIRSH net-start $TYPE-mgmt
@@ -44,32 +49,32 @@ $VIRSH net-autostart $TYPE-mgmt
 $VIRSH net-start $TYPE-priv
 $VIRSH net-autostart $TYPE-priv
 
-rm -f $tmp
-
 if [ "$TYPE" == "rhel6" ]; then
     IMPORT_IMG=$VMS_DIR/bak/$TYPE-guest.img
     test -f $IMPORT_IMG || error "$IMPORT_IMG not present"
 
     sudo chown $USER $VMS_DIR/$vm.img 2> /dev/null
-    rsync -LavP $IMPORT_IMG $VMS_DIR/$vm.img
+    rsync -LavP $IMPORT_IMG $VMS_DIR/$vm.img || error
 elif [ "$TYPE" == "centos6" ]; then
     virt-builder --hostname $vm --format qcow2 --size 15G --update \
-        --root-password password:password -o $VMS_DIR/$vm.img centos-6
+        --root-password password:password -o $VMS_DIR/$vm.img centos-6 \
+        || error
 elif [ "$TYPE" == "fedora20" ]; then
     virt-builder --hostname $vm --format qcow2 --size 15G --update \
-        --root-password password:password -o $VMS_DIR/$vm.img fedora-20
+        --root-password password:password -o $VMS_DIR/$vm.img fedora-20 \
+        || error
 fi
 
 sudo virt-sysprep --enable $SYSPREP_OPTS \
     --root-password password:password \
     --script $srcdir/sysprep-$TYPE \
     --firstboot $srcdir/firstboot-$TYPE \
-    -a $VMS_DIR/$vm.img
+    -a $VMS_DIR/$vm.img || error
 
 sudo virt-install -n $vm -r 2048 --vcpus 2 --noautoconsole \
     -w network=$TYPE-mgmt$macopt -w network=$TYPE-priv \
     --os-variant=$(osvariant $TYPE) \
-    --import --disk path=$VMS_DIR/$vm.img
+    --import --disk path=$VMS_DIR/$vm.img || error
 
 ssh-clean $vm
 

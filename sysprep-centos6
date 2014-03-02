@@ -1,0 +1,35 @@
+#!/bin/bash
+
+echo "Before disable of cloud-init"
+chroot . chkconfig --list 2> /dev/null | grep cloud-init
+chroot . chkconfig --level 2345 cloud-init off
+chroot . chkconfig --level 2345 sendmail off
+echo "After disable of cloud-init"
+chroot . chkconfig --list 2> /dev/null | grep cloud-init
+
+chroot . useradd admin -G wheel
+echo "password" | chroot . passwd admin --stdin
+
+rsync -v ~/.ssh/authorized_keys home/admin/.ssh/
+rsync -v ~/.ssh/authorized_keys root/.ssh/
+
+chroot . chown -R admin /home/admin/.ssh
+chroot . chmod go-rw /home/admin/.ssh
+chroot . chmod go-rw /root/.ssh
+
+echo "admin ALL=(ALL) NOPASSWD: ALL" >> etc/sudoers
+chroot . visudo -c
+
+rsync -av etc/skel/ root
+
+cat <<EOL > etc/yum.repos.d/epel.repo
+[epel]
+name=Extra Packages for Enterprise Linux 6 - $basearch
+#baseurl=http://download.fedoraproject.org/pub/epel/6/$basearch
+mirrorlist=https://mirrors.fedoraproject.org/metalink?repo=epel-6&arch=x86_64
+failovermethod=priority
+enabled=0
+gpgcheck=0
+EOL
+
+echo "Done"

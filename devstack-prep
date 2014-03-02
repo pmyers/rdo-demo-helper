@@ -8,7 +8,7 @@ test -z "$TYPE" && error "Please provide an image type: $IMG_TYPES"
 VM=admin@${TYPE}1
 
 gen-image $TYPE || exit 1
-sudo virsh start ${TYPE}1 || exit 1
+$VIRSH start ${TYPE}1 || exit 1
 sshwait $VM
 
 $ssh $VM cd rdo-demo-helper && git pull

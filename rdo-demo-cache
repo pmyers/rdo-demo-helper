@@ -11,10 +11,10 @@ test -z "$REL" && REL=icehouse
 
 vm=admin@zzz-$TYPE
 
-foreach_host $TYPE 10 "sudo virsh destroy" > /dev/null 2>&1
-foreach_host $TYPE 10 "sudo virsh undefine" > /dev/null 2>&1
+foreach_host $TYPE 10 "$VIRSH destroy" > /dev/null 2>&1
+foreach_host $TYPE 10 "$VIRSH undefine" > /dev/null 2>&1
 
-sudo virsh start zzz-$TYPE
+$VIRSH start zzz-$TYPE
 sshwait $vm
 
 $ssh $vm "cd rdo-demo-helper && git pull && root-ssh-setup"

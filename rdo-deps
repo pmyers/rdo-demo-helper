@@ -1,1 +1,1 @@
-epel-release openstack-* mysql-server boost-program-options boost-system boost-filesystem qpid-cpp-server qpid-cpp-client memcached xinetd libunwind gperftools-libs boost-thread snappy boost-iostreams v8 mongodb-server iproute
+epel-release openstack-* mysql-server boost-program-options boost-system boost-filesystem qpid-cpp-server qpid-cpp-client memcached xinetd libunwind gperftools-libs boost-thread snappy boost-iostreams v8 mongodb-server iproute tuned

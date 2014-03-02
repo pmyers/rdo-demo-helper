@@ -9,4 +9,4 @@ NUM=$2
 test -z "$TYPE" && error "Please provide an image type: $IMG_TYPES"
 test -z "$NUM" && NUM=1
 
-foreach_host $TYPE $NUM "sudo virsh destroy"
+foreach_host $TYPE $NUM "$VIRSH destroy"

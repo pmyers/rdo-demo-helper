@@ -17,9 +17,9 @@ sub=$(getsub $TYPE)
 privsub=$(( $sub - 50 ))
 ans="packstack-rdo-${REL}.ans"
 
-$srcdir/gen-image $TYPE $NUM
+$srcdir/gen-image $TYPE $NUM || error
 
-foreach_host $TYPE $NUM "sudo virsh start"
+foreach_host $TYPE $NUM "$VIRSH start"
 sshwait_hosts $TYPE $NUM
 
 foreach_hostssh $TYPE $NUM "cd rdo-demo-helper && git pull && root-ssh-setup"

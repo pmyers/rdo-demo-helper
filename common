@@ -4,6 +4,7 @@ IMG_TYPES="centos6 rhel6 rhel7 fedora20"
 SUBS="centos6:100 rhel6:101 rhel7:102 fedora20:103"
 
 ssh="ssh -txq"
+VIRSH="sudo virsh"
 
 txtund=$(tput sgr 0 1 2> /dev/null)    # Underline
 txtbld=$(tput bold 2> /dev/null)       # Bold
@@ -36,7 +37,9 @@ ssh-clean() {
 }
 
 error() {
-    echo "${txtred}$1${txtrst}"
+    local msg="$1"
+    [ -z "$msg" ] && msg="Error.  Aborting."
+    echo "${txtred}$msg${txtrst}"
     exit 1
 }
 
@@ -100,7 +103,7 @@ virsh_shutdown_wait() {
     echo -ne "${txtpur}"
     echo -n "virsh domstate waiting for $host."
 
-    until sudo virsh domstate $host | grep "shut off" > /dev/null 2>&1; do
+    until $VIRSH domstate $host | grep "shut off" > /dev/null 2>&1; do
         echo -n "."
         sleep 1
     done
@@ -159,7 +162,13 @@ sshwait_hosts() {
 osvariant() {
     local type=$1
     
-    [ "$type" == "cirros6" ] && type="rhel6"
+    [ "$type" == "centos6" ] && type="rhel6"
 
     echo $type
+}
+
+refresh-storage-pools() {
+    for pool in $($VIRSH pool-list | grep active | awk '{print $1}'); do
+        $VIRSH pool-refresh $pool
+    done
 }

@@ -14,9 +14,12 @@ test -f $VMS_DIR/zzz-$TYPE.img \
     || error "$VMS_DIR/zzz-$TYPE.img not present"
 
 sub=$(getsub $TYPE)
+privsub=$(( $sub - 50 ))
 [ -z "$num_hosts" ] && num_hosts=1
 
-sudo virsh shutdown zzz-$TYPE > /dev/null 2>&1
+refresh-storage-pools
+
+$VIRSH shutdown zzz-$TYPE > /dev/null 2>&1
 virsh_shutdown_wait zzz-$TYPE
 
 for i in `seq 1 $num_hosts`; do
@@ -24,24 +27,24 @@ for i in `seq 1 $num_hosts`; do
     ip="$(( $i + 100))"
     addhost $image 192.168.$sub.$ip
 
-    mac=$(grep "192.168.@SUB@.$ip" $srcdir/net-mgmt \
-        | sed 's/.*mac="\(.*\)" name=.*/\1/')
+    mac=$(grep "@NAME@$i" $srcdir/net-mgmt \
+        | sed 's/.*mac="\(.*\)" name=.*/\1/' | sed "s/@MAC@/$privsub/")
     [ -n "$mac" ] && macopt=",mac=$mac"
 
-    sudo virsh destroy $image 2> /dev/null
-    sudo virsh undefine $image 2> /dev/null
+    $VIRSH destroy $image 2> /dev/null
+    $VIRSH undefine $image 2> /dev/null
     test -f $VMS_DIR/$image.img && sudo rm -f $VMS_DIR/$image.img
 
     sudo qemu-img create -o backing_file=$VMS_DIR/zzz-$TYPE.img \
-        -f qcow2 $VMS_DIR/$image.img
+        -f qcow2 $VMS_DIR/$image.img || error
 
     sudo virt-sysprep --no-selinux-relabel --enable $SYSPREP_OPTS \
-	    --hostname $image -a $VMS_DIR/$image.img
+	    --hostname $image -a $VMS_DIR/$image.img || error
 
     sudo virt-install -n $image -r 4096 --vcpus 2 --noautoconsole \
         -w network=$TYPE-mgmt$macopt -w network=$TYPE-priv \
         --os-variant=$(osvariant $TYPE) \
-        --noreboot --import --disk path=$VMS_DIR/$image.img
+        --noreboot --import --disk path=$VMS_DIR/$image.img || error
 
     ssh-clean $image
 done
