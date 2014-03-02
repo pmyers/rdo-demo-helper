@@ -61,7 +61,6 @@ $ssh cirros@$fip "sudo mkdir -p /mnt/volume"
 $ssh cirros@$fip "sudo mount /dev/vdb /mnt/volume"
 $ssh cirros@$fip "df -h"
 $ssh cirros@$fip "sudo touch /mnt/volume/test.txt"
-$ssh cirros@$fip "sudo unmount /mnt/volume"
 
 waitkey "Swift Demo"
 $ssh $mgmt ". keystonerc_admin && os-demo-swift"
