@@ -11,5 +11,11 @@ set +v
 id=$(nova volume-list | grep my-vol | awk -F '|' '{print $2}' | xargs)
 
 set -v
+nova volume-list
+set +v
+waitkey "Wait for volume to become available"
+
+set -v
+nova volume-list
 nova volume-attach $1 $id auto
 set +v
