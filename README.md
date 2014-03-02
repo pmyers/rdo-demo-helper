@@ -68,7 +68,6 @@ Notes:
 ------
 
 * Ceilometer and Savanna are not currently installed due to packaging issues
-
 * rdo-deps includes openstack* and so openstack-nova-volume has to be 
   explicitly excluded so that it doesn't get pulled in
 
