@@ -33,7 +33,7 @@ echo -ne "${txtblu}"
 foreach_hostssh $TYPE $NUM "uname -a"
 echo -ne "${txtrst}"
 
-foreach_hostssh $TYPE $NUM "sudo -E gen-static-ifcfg eth1 192.168.50.2"
+foreach_hostssh $TYPE $NUM "gen-static-ifcfg eth1 192.168.50.2"
 foreach_hostssh $TYPE $NUM "sudo ifup eth1"
 
 $ssh ${TYPE}1 "sudo yum-config-manager --enable epel"
