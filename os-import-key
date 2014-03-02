@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -v
 
 nova keypair-add --pub-key ~/.ssh/id_rsa.pub my-key
 

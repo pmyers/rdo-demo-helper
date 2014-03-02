@@ -1,0 +1,19 @@
+#!/bin/bash
+
+srcdir=$(readlink -m $(dirname $0))
+source $srcdir/common
+
+TYPE=$1
+NUM=$2
+
+shift
+shift
+
+test -z "$TYPE" && error "Please provide an image type: $IMG_TYPES"
+test -z "$NUM" && NUM=1
+
+for i in `seq 1 $NUM`; do 
+    HOSTS="$HOSTS $TYPE$i"
+done
+
+pssh -x "-t -t" -i -t 0 -H "$HOSTS" $@

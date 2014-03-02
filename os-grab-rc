@@ -1,5 +1,0 @@
-#!/bin/bash
-
-sudo cp /root/keystonerc_admin ~
-sudo cp /root/keystonerc_demo ~
-sudo chown $USER keystonerc*

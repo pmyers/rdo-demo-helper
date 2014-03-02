@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -v
 
 IMG=http://cloud.fedoraproject.org/fedora-20.x86_64.qcow2
 

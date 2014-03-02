@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -v
 
 source $(dirname $0)/common
 

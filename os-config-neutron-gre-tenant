@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -v
 
 neutron net-create int
 neutron subnet-create --name int int 10.0.0.0/24

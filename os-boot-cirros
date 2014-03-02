@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -v
 
 nova flavor-list
 nova image-list

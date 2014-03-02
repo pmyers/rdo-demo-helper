@@ -33,7 +33,7 @@ echo -ne "${txtblu}"
 foreach_hostssh $TYPE $NUM "uname -a"
 echo -ne "${txtrst}"
 
-for i in `seq 1 $count`; do
+for i in `seq 1 $NUM`; do
     ip="$(( $i + 100))"
     $ssh $TYPE$i "gen-static-ifcfg eth1 192.168.50.$ip"
 done

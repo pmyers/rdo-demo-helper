@@ -1,3 +1,0 @@
-#!/bin/bash
-
-r-gen-images r-mgmt r-compute
