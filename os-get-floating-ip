@@ -1,0 +1,11 @@
+#!/bin/bash
+
+source $(dirname $0)/common
+
+inst=$1
+test -z "$inst" && error "Please provide an instance id"
+
+fip=$(nova list | grep $inst | awk -F'|' '{print $7}' | xargs \
+    | tr ' ' '\n' | grep -v "int=")
+
+echo $fip

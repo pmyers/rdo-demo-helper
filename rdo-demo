@@ -14,7 +14,9 @@ test -z "$REL" && REL=icehouse
 mgmt=admin@${TYPE}1
 
 sub=$(getsub $TYPE)
-FIP=192.168.$sub.200
+
+foreach_host $TYPE $NUM "sudo virsh start"
+sshwait_hosts $TYPE $NUM
 
 foreach_hostssh $TYPE $NUM "cd rdo-demo-helper && git pull -nq"
 
@@ -42,21 +44,23 @@ waitkey "Booting Instance"
 $ssh $mgmt ". keystonerc_demo && os-boot-cirros"
 
 waitkey "Associating Floating IP"
-$ssh $mgmt ". keystonerc_demo && os-create-floating-ip my-cirros-inst $FIP"
+$ssh $mgmt ". keystonerc_demo && os-create-floating-ip my-cirros-inst"
+
+fip=$($ssh $mgmt ". keystonerc_demo && os-get-floating-ip my-cirros-inst")
 
 waitkey "Waiting for Instance"
-sshwait cirros@$FIP
+sshwait cirros@$fip
 
 waitkey "Set up Cinder Volume"
 $ssh $mgmt ". keystonerc_demo && os-create-cinder my-cirros-inst"
 
 waitkey "Mount Cinder Volume in Guest"
-$ssh cirros@$FIP "sudo /usr/sbin/mkfs.ext4 /dev/vdb"
-$ssh cirros@$FIP "sudo mkdir -p /mnt/volume"
-$ssh cirros@$FIP "sudo mount /dev/vdb /mnt/volume"
-$ssh cirros@$FIP "df -h"
-$ssh cirros@$FIP "sudo touch /mnt/volume/test.txt"
-$ssh cirros@$FIP "sudo unmount /mnt/volume"
+$ssh cirros@$fip "sudo /usr/sbin/mkfs.ext4 /dev/vdb"
+$ssh cirros@$fip "sudo mkdir -p /mnt/volume"
+$ssh cirros@$fip "sudo mount /dev/vdb /mnt/volume"
+$ssh cirros@$fip "df -h"
+$ssh cirros@$fip "sudo touch /mnt/volume/test.txt"
+$ssh cirros@$fip "sudo unmount /mnt/volume"
 
 waitkey "Swift Demo"
 $ssh $mgmt ". keystonerc_admin && os-demo-swift"
