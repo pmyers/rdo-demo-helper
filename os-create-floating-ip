@@ -9,8 +9,13 @@ set -v
 neutron floatingip-list
 nova floating-ip-list
 neutron floatingip-create external
+set +v
+
 fip=$(nova floating-ip-list | grep external | tr -d '|' | tr -s ' ' \
     | awk '{print $1}')
+
+set -v
 nova add-floating-ip $inst $fip
 neutron floatingip-list
 nova floating-ip-list
+set +v
