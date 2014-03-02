@@ -10,11 +10,11 @@ test -z "$TYPE" && error "Please provide an image type: $IMG_TYPES"
 test -z "$NUM" && NUM=1
 test -z $VMS_DIR && error "VMS_DIR is not set"
 
-foreach_host $TYPE $NUM "sudo virsh shutdown"
-sleepwait 10
+foreach_host $TYPE $NUM "sudo virsh shutdown" > /dev/null 2>&1
+foreach_host $TYPE $NUM virsh_shutdown_wait
 
 for i in `seq 1 $NUM`; do
     image="${TYPE}$i.img"
-    rsync -avP $VMS_DIR/$image.bak $VMS_DIR/$image
+    rsync -aP $VMS_DIR/$image.bak $VMS_DIR/$image
 done
 

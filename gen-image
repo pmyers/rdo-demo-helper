@@ -16,7 +16,8 @@ test -f $VMS_DIR/zzz-$TYPE.img \
 sub=$(getsub $TYPE)
 [ -z "$num_hosts" ] && num_hosts=1
 
-sudo virsh shutdown zzz-$TYPE 2> /dev/null && sleepwait 10
+sudo virsh shutdown zzz-$TYPE > /dev/null 2>&1
+virsh_shutdown_wait zzz-$TYPE
 
 for i in `seq 1 $num_hosts`; do
     image="${TYPE}$i"

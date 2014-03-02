@@ -94,6 +94,22 @@ sshwait() {
     echo -ne "${txtrst}"
 }
 
+virsh_shutdown_wait() {
+    local host=$1
+
+    echo -ne "${txtpur}"
+    echo -n "virsh domstate waiting for $host."
+
+    until sudo virsh domstate $host | grep "shut off" > /dev/null 2>&1; do
+        echo -n "."
+        sleep 1
+    done
+
+    echo -ne "${txtblu}"
+    echo " $host is down!"
+    echo -ne "${txtrst}"
+}
+
 addhost() {
     local host=$1
     local ip=$2
