@@ -13,7 +13,7 @@ test -z "$TYPE" && error "Please provide an image type: $IMG_TYPES"
 test -z "$NUM" && NUM=1
 
 for i in `seq 1 $NUM`; do 
-    HOSTS="$HOSTS $TYPE$i"
+    HOSTS="$HOSTS admin@$TYPE$i"
 done
 
 pssh -x "-t -t" -i -t 0 -H "$HOSTS" $@
