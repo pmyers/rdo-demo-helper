@@ -1,0 +1,20 @@
+#!/bin/bash
+
+srcdir=$(readlink -m $(dirname $0))
+source $srcdir/common
+
+TYPE=$1
+NUM=$2
+
+test -z "$TYPE" && error "Please provide an image type: $IMG_TYPES"
+test -z "$NUM" && NUM=1
+test -z $VMS_DIR && error "VMS_DIR is not set"
+
+foreach_host $TYPE $NUM "sudo virsh shutdown"
+sleepwait 10
+
+for i in `seq 1 $NUM`; do
+    image="${TYPE}$i.img"
+    rsync -avP $VMS_DIR/$image.bak $VMS_DIR/$image
+done
+
