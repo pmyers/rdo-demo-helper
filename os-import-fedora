@@ -1,11 +1,6 @@
 #!/bin/bash
 
-IMG=http://cloud.fedoraproject.org/fedora-20.x86_64.qcow2
-
-file=$1
-test -n "$file" || file="fedora-20.x86_64.qcow2" 
-
-test -f "$file" || wget $IMG -O $file
+os-dl-fedora
 
 set -v
 glance image-delete my-fedora

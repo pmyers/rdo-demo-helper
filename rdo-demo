@@ -22,7 +22,7 @@ waitkey "Setting up Keystone Users"
 $ssh $mgmt ". keystonerc_admin && os-create-tenant"
 
 waitkey "Importing Fedora Guest Image"
-$ssh $mgmt ". keystonerc_admin && os-import-fedora fedora-guest.img"
+$ssh $mgmt ". keystonerc_admin && os-import-fedora"
 waitkey "Importing Cirros Guest Image"
 $ssh $mgmt ". keystonerc_admin && os-import-cirros"
 

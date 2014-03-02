@@ -1,0 +1,6 @@
+#!/bin/bash
+
+img="fedora-20.x86_64.qcow2" 
+url="http://cloud.fedoraproject.org/$img"
+
+test -f "$img" || wget $url -O $img
