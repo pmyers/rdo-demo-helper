@@ -1,7 +1,7 @@
 #!/bin/bash
 
-IMG_TYPES="rhel-6 fedora-20"
-SUBS="rhel-6:100 fedora-20:101"
+IMG_TYPES="centos6 rhel6 rhel7 fedora20"
+SUBS="centos6:100 rhel6:101 rhel7:102 fedora20:103"
 
 ssh="ssh -txq"
 
@@ -126,15 +126,23 @@ foreach_hostssh() {
 
     for i in `seq 1 $count`; do
         image="${type}$i"
-        $ssh $image $command
+        $ssh admin@$image $command
+    done
+}
+
+sshwait_hosts() {
+    local type=$1
+    local count=$2
+
+    for i in `seq 1 $count`; do
+        image="${type}$i"
+        sshwait admin@$image
     done
 }
 
 osvariant() {
     local type=$1
     
-    type=$(echo $type | tr -d '-')
-
     [ "$type" == "cirros6" ] && type="rhel6"
 
     echo $type

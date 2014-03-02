@@ -1,0 +1,24 @@
+#!/bin/bash
+
+source $(dirname $0)/common
+
+TYPE=$1
+test -z "$TYPE" && error "Please provide an image type: $IMG_TYPES"
+
+VM=admin@${TYPE}1
+
+gen-image $TYPE || exit 1
+sudo virsh start ${TYPE}1 || exit 1
+sshwait $VM
+
+$ssh $VM cd rdo-demo-helper && git pull
+
+# Note: Remove libxslt-devel from this once devstack dependencies are fixed
+$ssh $VM sudo rm -f /etc/yum.repos.d/epel.repo
+
+$ssh $VM git clone https://github.com/openstack-dev/devstack.git
+
+$ssh $VM cp -v rdo-demo-helper/devstack-localrc devstack/localrc
+
+waitkey "Press a key to start devstack..."
+$ssh $VM run-stack

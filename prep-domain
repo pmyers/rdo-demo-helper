@@ -45,15 +45,18 @@ $VIRSH net-autostart $TYPE-priv
 
 rm -f $tmp
 
-if [ "$TYPE" == "rhel-6" ]; then
+if [ "$TYPE" == "rhel6" ]; then
     IMPORT_IMG=$VMS_DIR/bak/$TYPE-guest.img
     test -f $IMPORT_IMG || error "$IMPORT_IMG not present"
 
     sudo chown $USER $VMS_DIR/$vm.img 2> /dev/null
     rsync -LavP $IMPORT_IMG $VMS_DIR/$vm.img
-else 
+elif [ "$TYPE" == "centos6" ]; then
     virt-builder --hostname $vm --format qcow2 \
-        --root-password password:password --size 15 --update $TYPE
+        --root-password password:password --size 15 --update centos-6
+elif [ "$TYPE" == "fedora20" ]; then
+    virt-builder --hostname $vm --format qcow2 \
+        --root-password password:password --size 15 --update fedora-20
 fi
 
 sudo virt-sysprep --enable $SYSPREP_OPTS \

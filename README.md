@@ -1,10 +1,12 @@
 rdo-demo-helper
 ===============
 
-Some scripts to help with setting up demos of RDO
+Some scripts to help with setting up demos of RDO.  Goal is to work with RHEL6,
+RHEL7 Beta, CentOS6 and Fedora 20+.  All-in-One and multi-node setups work
+using Packstack.  Eventually might try to script Foreman installs too.
 
 Prerequisites:
-
+--------------
 0. The user you're running as has sudo enabled and wide open with NOPASSWD
 
 1. Define a VMS_DIR location, i.e.:
@@ -16,11 +18,41 @@ Prerequisites:
    this directory as a valid location for storing VM images
 
 2. If using RHEL, download RHEL Guest Image
-   
-   Place into $VMS_DIR/bak and name like:
+   https://rhn.redhat.com/rhn/software/channel/downloads/Download.do?cid=16952
+   A valid RHN login and RHEL 6 Server subscription is required.
 
-   rhel-6-guest.img
+   Place into $VMS_DIR/bak and name like:
+   rhel6-guest.img
 
    This file in $VMS_DIR/bak can be a symlink.
 
-3. 
+   NOTE: Using rhel6 implies that you have access to some internal
+   repositories at Red Hat.  For non Red Hat users, CentOS6 would be the way
+   to go, at least until I integrate subscription-manager support in the
+   scripts.
+
+3. The script will add entries (via sudo) to /etc/hosts as a convenience
+
+Instructions:
+-------------
+
+git clone https://github.com/pmyers/rdo-demo-helper.git
+cd rdo-demo-helper
+
+./prep-domain rhel6
+  This creates a zzz-rhel6 domain and image, that the other images will be
+  based on.
+
+./rdo-demo-cache rhel6
+  This will populate the base image with all of the packages needed so that
+  later runs of the scripts below don't have to access much over the internet
+
+./rdo-demo-prep rhel6 3
+  This will install packstack and run it on the first node.  The argument
+  after 'rhel6' indicates you want 3 virtual nodes in the cluster.  Node 1
+  is the controller, all 3 will be compute nodes.  Following this, you should
+  have a running RDO install
+
+./rdo-demo rhel6 3
+  This will execute an interactive demo that will print out the commands
+  being used as well as show lots of CLI output.

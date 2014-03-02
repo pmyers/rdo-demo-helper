@@ -1,0 +1,26 @@
+#!/bin/bash
+
+srcdir=$(readlink -m $(dirname $0))
+source $srcdir/common
+
+TYPE=$1
+REL=$2
+
+test -z "$TYPE" && error "Please provide an image type: $IMG_TYPES"
+test -z "$REL" && REL=icehouse
+
+vm=admin@zzz-$TYPE
+
+foreach_host $TYPE 10 "sudo virsh destroy" > /dev/null 2>&1
+foreach_host $TYPE 10 "sudo virsh undefine" > /dev/null 2>&1
+
+sudo virsh start zzz-$TYPE
+sshwait $vm
+
+$ssh $vm "cd rdo-demo-helper && git pull && root-ssh-setup"
+
+$ssh $vm "rdo-release $REL"
+
+$ssh $vm "sudo yum-config-manager --enable epel"
+
+$ssh $vm "sudo yum install --exclude openstack-nova-volume --exclude openstack-savanna $(cat $srcdir/rdo-deps | xargs) -y"

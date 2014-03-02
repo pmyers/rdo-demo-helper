@@ -11,42 +11,44 @@ test -z "$TYPE" && error "Please provide an image type: $IMG_TYPES"
 test -z "$NUM" && NUM=1
 test -z "$REL" && REL=icehouse
 
+mgmt=admin@${TYPE}1
+
 sub=$(getsub $TYPE)
 FIP=192.168.$sub.200
 
-foreach_hostssh $TYPE $NUM "cd rdo-demo-helper && git pull" > /dev/null 2>&1
+foreach_hostssh $TYPE $NUM "cd rdo-demo-helper && git pull -nq"
 
 waitkey "Setting up Keystone Users"
-$ssh ${TYPE}1 ". keystonerc_admin && os-create-tenant"
+$ssh $mgmt ". keystonerc_admin && os-create-tenant"
 
 waitkey "Importing Fedora Guest Image"
-$ssh ${TYPE}1 ". keystonerc_admin && os-import-fedora fedora-guest.img"
+$ssh $mgmt ". keystonerc_admin && os-import-fedora fedora-guest.img"
 waitkey "Importing Cirros Guest Image"
-$ssh ${TYPE}1 ". keystonerc_admin && os-import-cirros"
+$ssh $mgmt ". keystonerc_admin && os-import-cirros"
 
 waitkey "Setting up External Bridge"
-$ssh ${TYPE}1 "os-setup-brex"
+$ssh $mgmt "os-setup-brex"
 waitkey "Setting up External Bridge in Neutron"
-$ssh ${TYPE}1 ". keystonerc_admin && os-config-neutron-gre"
+$ssh $mgmt ". keystonerc_admin && os-config-neutron-gre"
 waitkey "Setting up Tenant Network"
-$ssh ${TYPE}1 ". keystonerc_demo && os-config-neutron-gre-tenant"
+$ssh $mgmt ". keystonerc_demo && os-config-neutron-gre-tenant"
 waitkey "Open Security Groups"
-$ssh ${TYPE}1 ". keystonerc_demo && os-sec-open"
+$ssh $mgmt ". keystonerc_demo && os-sec-open"
 
 waitkey "Importing SSH Key"
-$ssh ${TYPE}1 ". keystonerc_demo && os-import-key"
+$ssh $mgmt ". keystonerc_demo && os-import-key"
 
 waitkey "Booting Instance"
-$ssh ${TYPE}1 ". keystonerc_demo && os-boot-cirros"
+$ssh $mgmt ". keystonerc_demo && os-boot-cirros"
 
 waitkey "Associating Floating IP"
-$ssh ${TYPE}1 ". keystonerc_demo && os-create-floating-ip my-cirros-inst"
+$ssh $mgmt ". keystonerc_demo && os-create-floating-ip my-cirros-inst"
 
 waitkey "Waiting for Instance"
 sshwait cirros@$FIP
 
 waitkey "Set up Cinder Volume"
-$ssh ${TYPE}1 ". keystonerc_demo && os-create-cinder my-cirros-inst"
+$ssh $mgmt ". keystonerc_demo && os-create-cinder my-cirros-inst"
 
 waitkey "Mount Cinder Volume in Guest"
 $ssh cirros@$FIP "sudo /usr/sbin/mkfs.ext4 /dev/vdb"
@@ -57,4 +59,4 @@ $ssh cirros@$FIP "sudo touch /mnt/volume/test.txt"
 $ssh cirros@$FIP "sudo unmount /mnt/volume"
 
 waitkey "Swift Demo"
-$ssh ${TYPE}1 ". keystonerc_admin && os-demo-swift"
+$ssh $mgmt ". keystonerc_admin && os-demo-swift"
