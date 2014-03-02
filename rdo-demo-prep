@@ -14,6 +14,7 @@ test -z "$REL" && REL=icehouse
 mgmt=admin@${TYPE}1
 
 sub=$(getsub $TYPE)
+privsub=$(( $sub - 50 ))
 ans="packstack-rdo-${REL}.ans"
 
 $srcdir/gen-image $TYPE $NUM
@@ -36,7 +37,7 @@ echo -ne "${txtrst}"
 
 for i in `seq 1 $NUM`; do
     ip="$(( $i + 100))"
-    $ssh admin@$TYPE$i "gen-static-ifcfg eth1 192.168.50.$ip"
+    $ssh admin@$TYPE$i "gen-static-ifcfg eth1 192.168.$privsub.$ip"
 done
 
 foreach_hostssh $TYPE $NUM "sudo ifup eth1"
