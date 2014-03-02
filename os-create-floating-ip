@@ -8,14 +8,17 @@ test -z "$inst" && error "Please provide an instance id"
 set -v
 neutron floatingip-list
 nova floating-ip-list
-neutron floatingip-create external
 set +v
 
-fip=$(nova floating-ip-list | grep external | tr -d '|' | tr -s ' ' \
-    | awk '{print $1}')
+set -x
+fip=$(neutron floatingip-create external -f shell \
+    | grep "floating_ip_address" | cut -d "=" -f 2 | xargs)
+set +x
 
 set -v
 nova add-floating-ip $inst $fip
 neutron floatingip-list
 nova floating-ip-list
 set +v
+
+echo $fip > $inst.fip
