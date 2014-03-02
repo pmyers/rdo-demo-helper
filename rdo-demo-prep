@@ -10,7 +10,8 @@ REL=$3
 test -z "$TYPE" && error "Please provide an image type: $IMG_TYPES"
 test -z "$NUM" && NUM=1
 test -z "$REL" && REL=icehouse
-test -z $VMS_DIR && error "VMS_DIR is not set"
+
+mgmt=admin@${TYPE}1
 
 sub=$(getsub $TYPE)
 ans="packstack-rdo-${REL}.ans"
@@ -22,7 +23,7 @@ sshwait_hosts $TYPE $NUM
 
 foreach_hostssh $TYPE $NUM "cd rdo-demo-helper && git pull && root-ssh-setup"
 
-$ssh admin@${TYPE}1 "rdo-release $REL"
+$ssh $mgmt "rdo-release $REL"
 sleepwait 5
 
 foreach_hostssh $TYPE $NUM "sudo reboot"
@@ -40,10 +41,8 @@ done
 
 foreach_hostssh $TYPE $NUM "sudo ifup eth1"
 
-$ssh admin@${TYPE}1 "sudo yum-config-manager --enable epel"
-$ssh admin@${TYPE}1 "gen-answer-file $TYPE $NUM $sub rdo-demo-helper/$ans"
-$ssh admin@${TYPE}1 "packstack --answer-file=packstack.ans"
+$ssh $mgmt "sudo yum-config-manager --enable epel"
+$ssh $mgmt "gen-answer-file $TYPE $NUM $sub rdo-demo-helper/$ans"
+$ssh $mgmt "packstack --answer-file=packstack.ans"
 
-$ssh admin@${TYPE}1 "rdo-${REL}-workarounds"
-
-scp $VMS_DIR/bak/fedora-20-guest.img ${TYPE}1:.
+$ssh $mgmt "rdo-${REL}-workarounds"
