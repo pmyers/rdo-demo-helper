@@ -2,7 +2,7 @@
 
 source $(dirname $0)/common
 
-echo -ne "${txtcya}"
+echo -ne "${txtcyn}"
 echo "RDO Icehouse Overrides"
 echo -ne "${txtrst}"
 
