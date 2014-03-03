@@ -1,11 +1,10 @@
 #!/bin/bash
 
-img="fedora-20.x86_64.qcow2"
 os-dl-fedora
 
 set -v
 glance image-delete my-fedora
 glance image-create --name my-fedora --disk-format qcow2 \
-    --container-format bare --file $img --is-public True
+    --container-format bare --file fedora20-guest.img --is-public True
 
 glance image-list

@@ -49,20 +49,36 @@ $VIRSH net-autostart $TYPE-mgmt
 $VIRSH net-start $TYPE-priv
 $VIRSH net-autostart $TYPE-priv
 
-if [ "$TYPE" == "rhel6" ]; then
-    IMPORT_IMG=$VMS_DIR/bak/$TYPE-guest.img
-    test -f $IMPORT_IMG || error "$IMPORT_IMG not present"
+sudo chown $USER $VMS_DIR/$vm.img 2> /dev/null
+IMPORT_IMG=$VMS_DIR/bak/$TYPE-guest.img
 
-    sudo chown $USER $VMS_DIR/$vm.img 2> /dev/null
+if [ "$TYPE" == "rhel6" ]; then
+    test -f $IMPORT_IMG || error "$IMPORT_IMG not present"
     rsync -LavP $IMPORT_IMG $VMS_DIR/$vm.img || error
 elif [ "$TYPE" == "centos6" ]; then
     virt-builder --hostname $vm --format qcow2 --size 15G --update \
-        --root-password password:password -o $VMS_DIR/$vm.img centos-6 \
-        || error
+        --root-password password:password --selinux-relabel \
+        -o $VMS_DIR/$vm.img centos-6 || error
 elif [ "$TYPE" == "fedora20" ]; then
-    virt-builder --hostname $vm --format qcow2 --size 15G --update \
-        --root-password password:password -o $VMS_DIR/$vm.img fedora-20 \
-        || error
+    # NOTE: It appears that the image used by virt-builder for F20
+    #       is totally broken and not the same one that is actually shipped
+    #       by the Fedora team
+    #    virt-builder --hostname $vm --format qcow2 --size 15G --update \
+    #        --root-password password:password --selinux-relabel \
+    #        -o $VMS_DIR/$vm.img fedora-20 || error
+    pushd $VMS_DIR/bak
+    $srcdir/os-dl-fedora
+    popd
+
+    test -f $IMPORT_IMG || error "$IMPORT_IMG not present"
+    rsync -LavP $IMPORT_IMG $VMS_DIR/$vm.img || error
+
+    # NOTE: The Fedora cloud image is 2GB rootfs.  virt-builder would resize
+    # this for us but since virt-builder has a broken image, we do it manually
+    rm -fv $vm-tmp.img
+    qemu-img create -f qcow2 -o preallocation=metadata $VMS_DIR/$vm-tmp.img 15G
+    sudo virt-resize --expand /dev/sda1 $VMS_DIR/$vm.img $VMS_DIR/$vm-tmp.img
+    mv -fv $VMS_DIR/$vm-tmp.img $VMS_DIR/$vm.img
 fi
 
 sudo virt-sysprep --enable $SYSPREP_OPTS \
@@ -77,7 +93,6 @@ sudo virt-install -n $vm -r 2048 --vcpus 2 --noautoconsole \
     --import --disk path=$VMS_DIR/$vm.img || error
 
 ssh-clean $vm
-
 sshwait admin@$vm
 
 $ssh admin@$vm sudo yum install yum deltarpm -y

@@ -1,18 +1,19 @@
 #!/bin/bash
 
-restorecon -rv /
-
 useradd admin -G wheel
 echo "password" | passwd admin --stdin
 
-mkdir -pv /home/admin/.ssh
+mkdir -p /home/admin/.ssh
 cp -v /root/.ssh/authorized_keys /home/admin/.ssh
 
 chown -R admin /home/admin/.ssh
-chmod -R go-rw /home/admin/.ssh
-chmod -R go-rw /root/.ssh
+chmod go-rw /home/admin/.ssh
+chmod go-rw /root/.ssh
 
-echo "admin ALL=(ALL) NOPASSWD: ALL" >> etc/sudoers
+restorecon -rv /home/admin
+restorecon -rv /root
+
+echo "admin ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 visudo -c
 
 echo "Done"

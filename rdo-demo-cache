@@ -23,7 +23,13 @@ $ssh $vm "rdo-release $REL"
 
 $ssh $vm "sudo yum-config-manager --enable epel"
 
-$ssh $vm "sudo yum install --exclude openstack-nova-volume --exclude openstack-savanna $(cat $srcdir/rdo-deps | xargs) -y"
+$ssh $vm "sudo yum install $(cat $srcdir/rdo-deps | xargs) -y"
 
-$ssh $vm "os-dl-cirros"
-$ssh $vm "os-dl-fedora"
+pushd $VMS_DIR/bak
+$srcdir/os-dl-cirros
+$srcdir/os-dl-fedora
+
+rsync -aLP fedora20-guest.img $vm:.
+rsync -aLP cirros-guest.img $vm:.
+popd
+
