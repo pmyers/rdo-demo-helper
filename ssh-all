@@ -9,7 +9,7 @@ NUM=$2
 shift
 shift
 
-test -z "$TYPE" && error "Please provide an image type: $IMG_TYPES"
+checktype $TYPE
 test -z "$NUM" && NUM=1
 
 for i in `seq 1 $NUM`; do 

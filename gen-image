@@ -8,7 +8,7 @@ SYSPREP_OPTS=$(virt-sysprep --list-operations | grep \* | awk '{print $1}' | gre
 TYPE=$1
 num_hosts=$2
 
-test -z "$TYPE" && error "Please provide an image type: $IMG_TYPES"
+checktype $TYPE
 test -z $VMS_DIR && error "VMS_DIR is not set"
 test -f $VMS_DIR/zzz-$TYPE.img \
     || error "$VMS_DIR/zzz-$TYPE.img not present"

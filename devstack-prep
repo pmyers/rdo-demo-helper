@@ -3,7 +3,7 @@
 source $(dirname $0)/common
 
 TYPE=$1
-test -z "$TYPE" && error "Please provide an image type: $IMG_TYPES"
+checktype $TYPE
 
 VM=admin@${TYPE}1
 

@@ -1,7 +1,6 @@
 #!/bin/bash
 
 IMG_TYPES="centos6 rhel6 rhel7 fedora20"
-SUBS="centos6:100 rhel6:101 rhel7:102 fedora20:103"
 
 ssh="ssh -txq"
 VIRSH="sudo virsh"
@@ -39,7 +38,7 @@ ssh-clean() {
 error() {
     local msg="$1"
     [ -z "$msg" ] && msg="Error.  Aborting."
-    echo "${txtred}$msg${txtrst}"
+    echo "${txtred}$msg${txtrst}" 1>&2
     exit 1
 }
 
@@ -123,8 +122,23 @@ addhost() {
 
 getsub() {
     local type=$1
-    local sub=$(echo $SUBS | tr ' ' '\n' | grep $type | cut -d":" -f2)
-    echo $sub
+
+    local sub=100
+    for t in $IMG_TYPES; do
+        if [ "$t" == "$type" ]; then
+            echo $sub
+            return
+        fi
+
+        sub=$(( $sub + 1 ))
+    done
+
+    error "Image '$type' not recognized.  Please pick one of: $IMG_TYPES"
+}
+
+checktype() {
+    local type=$1
+    getsub $type > /dev/null
 }
 
 foreach_host() {

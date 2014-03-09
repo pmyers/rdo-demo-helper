@@ -7,7 +7,7 @@ TYPE=$1
 NUM=$2
 REL=$3
 
-test -z "$TYPE" && error "Please provide an image type: $IMG_TYPES"
+checktype $TYPE
 test -z "$NUM" && NUM=1
 test -z "$REL" && REL=icehouse
 

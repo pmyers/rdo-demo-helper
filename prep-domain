@@ -7,8 +7,8 @@ SYSPREP_OPTS=$(virt-sysprep --list-operations | grep \* | awk '{print $1}' | gre
 
 TYPE=$1
 
+checktype $TYPE
 test -z $VMS_DIR && error "VMS_DIR is not set"
-test -z "$TYPE" && error "Please provide an image type: $IMG_TYPES"
 
 vm=zzz-$TYPE
 
@@ -53,6 +53,9 @@ sudo chown $USER $VMS_DIR/$vm.img 2> /dev/null
 IMPORT_IMG=$VMS_DIR/bak/$TYPE-guest.img
 
 if [ "$TYPE" == "rhel6" ]; then
+    test -f $IMPORT_IMG || error "$IMPORT_IMG not present"
+    rsync -LavP $IMPORT_IMG $VMS_DIR/$vm.img || error
+elif [ "$TYPE" == "rhel7" ]; then
     test -f $IMPORT_IMG || error "$IMPORT_IMG not present"
     rsync -LavP $IMPORT_IMG $VMS_DIR/$vm.img || error
 elif [ "$TYPE" == "centos6" ]; then

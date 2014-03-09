@@ -6,7 +6,7 @@ source $srcdir/common
 TYPE=$1
 REL=$2
 
-test -z "$TYPE" && error "Please provide an image type: $IMG_TYPES"
+checktype $TYPE
 test -z "$REL" && REL=icehouse
 
 vm=admin@zzz-$TYPE
