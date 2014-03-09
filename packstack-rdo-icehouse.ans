@@ -59,6 +59,10 @@ CONFIG_NAGIOS_INSTALL=n
 # you don't need to exclude any server.
 EXCLUDE_SERVERS=
 
+# Set to 'y' if you want to run OpenStack services in debug mode.
+# Otherwise set to 'n'.
+CONFIG_DEBUG_MODE=n
+
 # The IP address of the server on which to install MySQL
 CONFIG_MYSQL_HOST=@MGMT@
 
