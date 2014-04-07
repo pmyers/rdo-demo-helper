@@ -54,10 +54,10 @@ IMPORT_IMG=$VMS_DIR/bak/$TYPE-guest.img
 
 if [ "$TYPE" == "rhel6" ]; then
     test -f $IMPORT_IMG || error "$IMPORT_IMG not present"
-    rsync -LavP $IMPORT_IMG $VMS_DIR/$vm.img || error
+    rsync -LaP $IMPORT_IMG $VMS_DIR/$vm.img || error
 elif [ "$TYPE" == "rhel7" ]; then
     test -f $IMPORT_IMG || error "$IMPORT_IMG not present"
-    rsync -LavP $IMPORT_IMG $VMS_DIR/$vm.img || error
+    rsync -LaP $IMPORT_IMG $VMS_DIR/$vm.img || error
 elif [ "$TYPE" == "centos6" ]; then
     sudo virt-builder --hostname $vm --format qcow2 --size 15G --update \
         --root-password password:password --selinux-relabel \
@@ -74,7 +74,7 @@ elif [ "$TYPE" == "fedora20" ]; then
     popd
 
     test -f $IMPORT_IMG || error "$IMPORT_IMG not present"
-    rsync -LavP $IMPORT_IMG $VMS_DIR/$vm.img || error
+    rsync -LaP $IMPORT_IMG $VMS_DIR/$vm.img || error
 
     # NOTE: The Fedora cloud image is 2GB rootfs.  virt-builder would resize
     # this for us but since virt-builder has a broken image, we do it manually
