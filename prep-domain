@@ -59,14 +59,14 @@ elif [ "$TYPE" == "rhel7" ]; then
     test -f $IMPORT_IMG || error "$IMPORT_IMG not present"
     rsync -LavP $IMPORT_IMG $VMS_DIR/$vm.img || error
 elif [ "$TYPE" == "centos6" ]; then
-    virt-builder --hostname $vm --format qcow2 --size 15G --update \
+    sudo virt-builder --hostname $vm --format qcow2 --size 15G --update \
         --root-password password:password --selinux-relabel \
         -o $VMS_DIR/$vm.img centos-6 || error
 elif [ "$TYPE" == "fedora20" ]; then
     # NOTE: It appears that the image used by virt-builder for F20
     #       is totally broken and not the same one that is actually shipped
     #       by the Fedora team
-    #    virt-builder --hostname $vm --format qcow2 --size 15G --update \
+    #    sudo virt-builder --hostname $vm --format qcow2 --size 15G --update \
     #        --root-password password:password --selinux-relabel \
     #        -o $VMS_DIR/$vm.img fedora-20 || error
     pushd $VMS_DIR/bak
