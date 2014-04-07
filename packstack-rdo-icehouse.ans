@@ -39,7 +39,7 @@ CONFIG_CEILOMETER_INSTALL=n
 
 # Set to 'y' if you would like Packstack to install OpenStack
 # Orchestration (Heat)
-CONFIG_HEAT_INSTALL=n
+CONFIG_HEAT_INSTALL=y
 
 # Set to 'y' if you would like Packstack to install the OpenStack
 # Client packages. An admin "rc" file will also be installed
@@ -51,7 +51,7 @@ CONFIG_NTP_SERVERS=
 
 # Set to 'y' if you would like Packstack to install Nagios to monitor
 # OpenStack hosts
-CONFIG_NAGIOS_INSTALL=n
+CONFIG_NAGIOS_INSTALL=y
 
 # Comma separated list of servers to be excluded from installation in
 # case you are running Packstack the second time with the same answer
@@ -63,6 +63,10 @@ EXCLUDE_SERVERS=
 # Otherwise set to 'n'.
 CONFIG_DEBUG_MODE=n
 
+# Set to 'y' if you want to use VMware vCenter as hypervisor and
+# storageOtherwise set to 'n'.
+CONFIG_VMWARE_BACKEND=n
+
 # The IP address of the server on which to install MySQL
 CONFIG_MYSQL_HOST=@MGMT@
 
@@ -72,40 +76,41 @@ CONFIG_MYSQL_USER=root
 # Password for the MySQL admin user
 CONFIG_MYSQL_PW=password
 
-# The IP address of the server on which to install the QPID service
-CONFIG_QPID_HOST=@MGMT@
+# Set the server for the AMQP service
+CONFIG_AMQP_SERVER=qpid
 
-#### 
-# Enable SSL for the QPID service
-CONFIG_QPID_ENABLE_SSL=n
+# The IP address of the server on which to install the AMQP service
+CONFIG_AMQP_HOST=@MGMT@
 
-# Enable Authentication for the QPID service
-CONFIG_QPID_ENABLE_AUTH=n
+# Enable SSL for the AMQP service
+CONFIG_AMQP_ENABLE_SSL=n
 
-# The password for the NSS certificate database of the QPID service
-CONFIG_QPID_NSS_CERTDB_PW=password
+# Enable Authentication for the AMQP service
+CONFIG_AMQP_ENABLE_AUTH=n
 
-# The port in which the QPID service listens to SSL connections
-CONFIG_QPID_SSL_PORT=5671
+# The password for the NSS certificate database of the AMQP service
+CONFIG_AMQP_NSS_CERTDB_PW=password
 
-# The filename of the certificate that the QPID service is going to
+# The port in which the AMQP service listens to SSL connections
+CONFIG_AMQP_SSL_PORT=5671
+
+# The filename of the certificate that the AMQP service is going to
 # use
-CONFIG_QPID_SSL_CERT_FILE=/etc/pki/tls/certs/qpid_selfcert.pem
+CONFIG_AMQP_SSL_CERT_FILE=/etc/pki/tls/certs/amqp_selfcert.pem
 
-# The filename of the private key that the QPID service is going to
+# The filename of the private key that the AMQP service is going to
 # use
-CONFIG_QPID_SSL_KEY_FILE=/etc/pki/tls/private/qpid_selfkey.pem
+CONFIG_AMQP_SSL_KEY_FILE=/etc/pki/tls/private/amqp_selfkey.pem
 
 # Auto Generates self signed SSL certificate and key
-CONFIG_QPID_SSL_SELF_SIGNED=y
+CONFIG_AMQP_SSL_SELF_SIGNED=y
 
-# User for qpid authentication
-CONFIG_QPID_AUTH_USER=qpid_user
+# User for amqp authentication
+CONFIG_AMQP_AUTH_USER=amqp_user
 
 # Password for user authentication
-CONFIG_QPID_AUTH_PASSWORD=password
-####
- 
+CONFIG_AMQP_AUTH_PASSWORD=password
+
 # The IP address of the server on which to install Keystone
 CONFIG_KEYSTONE_HOST=@MGMT@
 
@@ -142,7 +147,8 @@ CONFIG_CINDER_DB_PW=password
 # The password to use for the Cinder to authenticate with Keystone
 CONFIG_CINDER_KS_PW=password
 
-# The Cinder backend to use, valid options are: lvm, gluster, nfs
+# The Cinder backend to use, valid options are: lvm, gluster, nfs,
+# vmdk
 CONFIG_CINDER_BACKEND=lvm
 
 # Create Cinder's volumes group. This should only be done for testing
@@ -161,6 +167,15 @@ CONFIG_CINDER_GLUSTER_MOUNTS=
 # A single or comma seprated list of NFS exports to mount, eg: ip-
 # address:/export-name
 CONFIG_CINDER_NFS_MOUNTS=
+
+# The IP address of the VMware vCenter datastore
+CONFIG_VCENTER_HOST=
+
+# The username to authenticate to VMware vCenter datastore
+CONFIG_VCENTER_USER=
+
+# The password to authenticate to VMware vCenter datastore
+CONFIG_VCENTER_PASSWORD=
 
 # The IP address of the server on which to install the Nova API
 # service
@@ -237,6 +252,18 @@ CONFIG_NOVA_NETWORK_NUMBER=1
 # Number of addresses in each private subnet
 CONFIG_NOVA_NETWORK_SIZE=255
 
+# The IP address of the VMware vCenter server
+CONFIG_VCENTER_HOST=
+
+# The username to authenticate to VMware vCenter server
+CONFIG_VCENTER_USER=
+
+# The password to authenticate to VMware vCenter server
+CONFIG_VCENTER_PASSWORD=
+
+# The name of the vCenter cluster
+CONFIG_VCENTER_CLUSTER_NAME=
+
 # The IP addresses of the server on which to install the Neutron
 # server
 CONFIG_NEUTRON_SERVER_HOST=@MGMT@
@@ -274,8 +301,52 @@ CONFIG_NEUTRON_METADATA_HOSTS=@MGMT@
 # metadata agent
 CONFIG_NEUTRON_METADATA_PW=password
 
+# A comma separated list of network type driver entrypoints to be
+# loaded from the neutron.ml2.type_drivers namespace.
+CONFIG_NEUTRON_ML2_TYPE_DRIVERS=local
+
+# A comma separated ordered list of network_types to allocate as
+# tenant networks. The value 'local' is only useful for single-box
+# testing but provides no connectivity between hosts.
+CONFIG_NEUTRON_ML2_TENANT_NETWORK_TYPES=local
+
+# A comma separated ordered list of networking mechanism driver
+# entrypoints to be loaded from the neutron.ml2.mechanism_drivers
+# namespace.
+CONFIG_NEUTRON_ML2_MECHANISM_DRIVERS=openvswitch
+
+# A comma separated  list of physical_network names with which flat
+# networks can be created. Use * to allow flat networks with arbitrary
+# physical_network names.
+CONFIG_NEUTRON_ML2_FLAT_NETWORKS=*
+
+# A comma separated list of <physical_network>:<vlan_min>:<vlan_max>
+# or <physical_network> specifying physical_network names usable for
+# VLAN provider and tenant networks, as well as ranges of VLAN tags on
+# each available for allocation to tenant networks.
+CONFIG_NEUTRON_ML2_VLAN_RANGES=
+
+# A comma separated list of <tun_min>:<tun_max> tuples enumerating
+# ranges of GRE tunnel IDs that are available for tenant network
+# allocation. Should be an array with tun_max +1 - tun_min > 1000000
+CONFIG_NEUTRON_ML2_TUNNEL_ID_RANGES=1:1000
+
+# Multicast group for VXLAN. If unset, disables VXLAN enable sending
+# allocate broadcast traffic to this multicast group. When left
+# unconfigured, will disable multicast VXLAN mode. Should be an
+# Multicast IP (v4 or v6) address.
+CONFIG_NEUTRON_ML2_VXLAN_GROUP=
+
+# A comma separated list of <vni_min>:<vni_max> tuples enumerating
+# ranges of VXLAN VNI IDs that are available for tenant network
+# allocation. Min value is 0 and Max value is 16777215.
+CONFIG_NEUTRON_ML2_VNI_RANGES=
+
+# The name of the L2 agent to be used with Neutron
+CONFIG_NEUTRON_L2_AGENT=openvswitch
+
 # The type of network to allocate for tenant networks (eg. vlan,
-# local, gre)
+# local)
 CONFIG_NEUTRON_LB_TENANT_NETWORK_TYPE=local
 
 # A comma separated list of VLAN ranges for the Neutron linuxbridge
@@ -288,12 +359,12 @@ CONFIG_NEUTRON_LB_VLAN_RANGES=
 CONFIG_NEUTRON_LB_INTERFACE_MAPPINGS=
 
 # Type of network to allocate for tenant networks (eg. vlan, local,
-# gre)
-CONFIG_NEUTRON_OVS_TENANT_NETWORK_TYPE=gre
+# gre, vxlan)
+CONFIG_NEUTRON_OVS_TENANT_NETWORK_TYPE=vxlan
 
 # A comma separated list of VLAN ranges for the Neutron openvswitch
 # plugin (eg. physnet1:1:4094,physnet2,physnet3:3000:3999)
-CONFIG_NEUTRON_OVS_VLAN_RANGES=physnet1
+CONFIG_NEUTRON_OVS_VLAN_RANGES=
 
 # A comma separated list of bridge mappings for the Neutron
 # openvswitch plugin (eg. physnet1:br-eth1,physnet2:br-eth2,physnet3
@@ -309,9 +380,12 @@ CONFIG_NEUTRON_OVS_BRIDGE_IFACES=
 CONFIG_NEUTRON_OVS_TUNNEL_RANGES=1:1000
 
 # The interface for the OVS tunnel. Packstack will override the IP
-# address used for GRE tunnels on this hypervisor to the IP found on
-# the specified interface. (eg. eth1)
+# address used for tunnels on this hypervisor to the IP found on the
+# specified interface. (eg. eth1)
 CONFIG_NEUTRON_OVS_TUNNEL_IF=eth1
+
+# VXLAN UDP port
+CONFIG_NEUTRON_OVS_VXLAN_UDP_PORT=4789
 
 # The IP address of the server on which to install the OpenStack
 # client packages. An admin "rc" file will also be installed
@@ -358,19 +432,21 @@ CONFIG_SWIFT_STORAGE_REPLICAS=1
 CONFIG_SWIFT_STORAGE_FSTYPE=ext4
 
 # Shared secret for Swift
-CONFIG_SWIFT_HASH=d44ce3e3386d4fdb
+CONFIG_SWIFT_HASH=password
 
 # Size of the swift loopback file storage device
 CONFIG_SWIFT_STORAGE_SIZE=2G
 
-# Whether to provision for demo usage and testing
-CONFIG_PROVISION_DEMO=n
+# Whether to provision for demo usage and testing. Note that
+# provisioning is only supported for all-in-one installations.
+CONFIG_PROVISION_DEMO=y
+
+# Whether to configure tempest for testing. Note that provisioning is
+# only supported for all-in-one installations.
+CONFIG_PROVISION_TEMPEST=n
 
 # The CIDR network address for the floating IP subnet
 CONFIG_PROVISION_DEMO_FLOATRANGE=172.24.4.224/28
-
-# Whether to configure tempest for testing
-CONFIG_PROVISION_TEMPEST=n
 
 # The uri of the tempest git repository to use
 CONFIG_PROVISION_TEMPEST_REPO_URI=https://github.com/openstack/tempest.git
@@ -416,12 +492,8 @@ CONFIG_CEILOMETER_SECRET=password
 # The password to use for Ceilometer to authenticate with Keystone
 CONFIG_CEILOMETER_KS_PW=password
 
-# To subscribe each server to EPEL enter "y"
-CONFIG_USE_EPEL=y
-
-# A comma separated list of URLs to any additional yum repositories
-# to install
-CONFIG_REPO=
+# The IP address of the server on which to install mongodb
+CONFIG_MONGODB_HOST=@MGMT@
 
 # The IP address of the server on which to install the Nagios server
 CONFIG_NAGIOS_HOST=@MGMT@
@@ -429,10 +501,17 @@ CONFIG_NAGIOS_HOST=@MGMT@
 # The password of the nagiosadmin user on the Nagios server
 CONFIG_NAGIOS_PW=password
 
+# To subscribe each server to EPEL enter "y"
+CONFIG_USE_EPEL=y
+
+# A comma separated list of URLs to any additional yum repositories
+# to install
+CONFIG_REPO=
+
 # To subscribe each server with Red Hat subscription manager, include
 # this with CONFIG_RH_PW
 CONFIG_RH_USER=
- 
+
 # To subscribe each server with Red Hat subscription manager, include
 # this with CONFIG_RH_USER
 CONFIG_RH_PW=
