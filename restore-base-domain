@@ -1,0 +1,18 @@
+#!/bin/bash
+
+srcdir=$(readlink -m $(dirname $0))
+source $srcdir/common
+
+TYPE=$1
+
+checktype $TYPE
+test -z $VMS_DIR && error "VMS_DIR is not set"
+
+vm=zzz-$TYPE
+
+refresh-storage-pools
+
+$VIRSH shutdown zzz-$TYPE > /dev/null 2>&1
+virsh_shutdown_wait zzz-$TYPE
+
+sudo rsync -aP $VMS_DIR/zzz-$TYPE.bak $VMS_DIR/zzz-$TYPE.img

@@ -42,7 +42,7 @@ git clone https://github.com/pmyers/rdo-demo-helper.git
 
 cd rdo-demo-helper
 
-./prep-domain centos6
+./prep-base-domain centos6
 
   This creates a zzz-centos6 domain and image, that the other images will be
   based on.
