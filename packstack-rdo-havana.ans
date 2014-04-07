@@ -76,40 +76,40 @@ CONFIG_MYSQL_USER=root
 # Password for the MySQL admin user
 CONFIG_MYSQL_PW=password
 
-# Set the server for the AMQP service
-CONFIG_AMQP_SERVER=qpid
+# Set the server for the QPID service
+CONFIG_QPID_SERVER=qpid
 
-# The IP address of the server on which to install the AMQP service
-CONFIG_AMQP_HOST=@MGMT@
+# The IP address of the server on which to install the QPID service
+CONFIG_QPID_HOST=@MGMT@
 
-# Enable SSL for the AMQP service
-CONFIG_AMQP_ENABLE_SSL=n
+# Enable SSL for the QPID service
+CONFIG_QPID_ENABLE_SSL=n
 
-# Enable Authentication for the AMQP service
-CONFIG_AMQP_ENABLE_AUTH=n
+# Enable Authentication for the QPID service
+CONFIG_QPID_ENABLE_AUTH=n
 
-# The password for the NSS certificate database of the AMQP service
-CONFIG_AMQP_NSS_CERTDB_PW=password
+# The password for the NSS certificate database of the QPID service
+CONFIG_QPID_NSS_CERTDB_PW=password
 
-# The port in which the AMQP service listens to SSL connections
-CONFIG_AMQP_SSL_PORT=5671
+# The port in which the QPID service listens to SSL connections
+CONFIG_QPID_SSL_PORT=5671
 
-# The filename of the certificate that the AMQP service is going to
+# The filename of the certificate that the QPID service is going to
 # use
-CONFIG_AMQP_SSL_CERT_FILE=/etc/pki/tls/certs/amqp_selfcert.pem
+CONFIG_QPID_SSL_CERT_FILE=/etc/pki/tls/certs/qpid_selfcert.pem
 
-# The filename of the private key that the AMQP service is going to
+# The filename of the private key that the QPID service is going to
 # use
-CONFIG_AMQP_SSL_KEY_FILE=/etc/pki/tls/private/amqp_selfkey.pem
+CONFIG_QPID_SSL_KEY_FILE=/etc/pki/tls/private/qpid_selfkey.pem
 
 # Auto Generates self signed SSL certificate and key
-CONFIG_AMQP_SSL_SELF_SIGNED=y
+CONFIG_QPID_SSL_SELF_SIGNED=y
 
-# User for amqp authentication
-CONFIG_AMQP_AUTH_USER=amqp_user
+# User for qpid authentication
+CONFIG_QPID_AUTH_USER=qpid_user
 
 # Password for user authentication
-CONFIG_AMQP_AUTH_PASSWORD=password
+CONFIG_QPID_AUTH_PASSWORD=password
 
 # The IP address of the server on which to install Keystone
 CONFIG_KEYSTONE_HOST=@MGMT@
