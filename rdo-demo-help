@@ -1,0 +1,19 @@
+#!/bin/bash
+
+echo "Main scripts:"
+echo "-------------"
+echo "prep-base-domain    - Generate a base guest image from a given os type"
+echo "backup-base-domain  - Backup base guest image for later use"
+echo "restore-base-domain - Restore base guest image from a backup"
+echo "rdo-demo-cache      - Install all RDO deps on a base image"
+echo "rdo-demo-prep       - Create virtual datacenter and install RDO on it"
+echo "rdo-demo-save       - Backup virtual datacenter images prior to a demo"
+echo "rdo-demo-restore    - Restore virtual datacenter images after a demo"
+echo "rdo-demo            - Run the demo script"
+echo
+echo "Extra scripts:"
+echo "--------------"
+echo "os-uninstall        - Remove OpenStack from the current host"
+echo "gen-image           - Generate a set of images from a base image"
+echo "gen-answer-file     - Generate a Packstack answer file from template"
+echo "rdo-reposync        - Cache RDO repos to local host"

@@ -1,5 +1,15 @@
 #!/bin/bash
 
+print_help() {
+    echo "$0"
+    echo
+    echo "This script uninstalls OpenStack from the machine it is run on"
+    echo "It is destructive.  Use with care."
+    exit 0
+}
+
+[ "-h" == "$1" ] && print_help
+
 # Warning! Dangerous step! Destroys VMs
 for x in $(virsh list --all | grep instance- | awk '{print $2}') ; do
     virsh destroy $x ;

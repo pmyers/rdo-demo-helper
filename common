@@ -1,6 +1,7 @@
 #!/bin/bash
 
 IMG_TYPES="centos6 rhel6 rhel7 fedora20"
+RELEASES="havana icehouse"
 
 ssh="ssh -txq"
 VIRSH="sudo virsh"
@@ -26,6 +27,10 @@ do_die() {
     exit 1
 }
 
+do_exit_error() {
+    exit 1
+}
+
 # trap keyboard interrupt (control-c)
 trap do_die SIGINT SIGTERM SIGQUIT
 
@@ -39,6 +44,9 @@ error() {
     local msg="$1"
     [ -z "$msg" ] && msg="Error.  Aborting."
     echo "${txtred}$msg${txtrst}" 1>&2
+    
+    trap do_exit_error EXIT
+    type -t print_help && print_help 1>&2
     exit 1
 }
 
@@ -133,7 +141,7 @@ getsub() {
         sub=$(( $sub + 1 ))
     done
 
-    error "Image '$type' not recognized.  Please pick one of: $IMG_TYPES"
+    error "os type '$type' not recognized.  Please pick one of: $IMG_TYPES"
 }
 
 checktype() {

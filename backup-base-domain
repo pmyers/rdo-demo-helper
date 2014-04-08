@@ -3,6 +3,18 @@
 srcdir=$(readlink -m $(dirname $0))
 source $srcdir/common
 
+print_help() {
+    echo "$0 [os type]"
+    echo
+    echo "This script copies a newly created base domain image to a backup"
+    echo "which can then later be recovered via restore-base-domain"
+    echo
+    echo "Valid os types are: $IMG_TYPES"
+    exit 0
+}
+
+[ "-h" == "$1" ] && print_help
+
 TYPE=$1
 
 checktype $TYPE

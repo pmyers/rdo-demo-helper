@@ -3,6 +3,21 @@
 srcdir=$(readlink -m $(dirname $0))
 source $srcdir/common
 
+print_help() {
+    echo "$0 [os type] [release]"
+    echo
+    echo "This script is run after prep-base-image creates a single base"
+    echo "image and installs all RDO prerequisites on it so that demo"
+    echo "installs do not need to download much over the network."
+    echo "You might want to consider running backup-base-domain prior to this"
+    echo
+    echo "Valid os types are: $IMG_TYPES"
+    echo "Valid OpenStack releases are: $RELEASES"
+    exit 0
+}
+
+[ "-h" == "$1" ] && print_help
+
 TYPE=$1
 REL=$2
 

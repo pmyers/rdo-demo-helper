@@ -5,6 +5,18 @@ source $srcdir/common
 
 SYSPREP_OPTS=$(virt-sysprep --list-operations | grep \* | awk '{print $1}' | grep -v -e ssh-userdir | xargs | tr ' ' ',')
 
+print_help() {
+    echo "$0 [os type]"
+    echo
+    echo "This script prepares a base qcow2 image of the given type for use"
+    echo "in deploying multiple guests in a virtual datacenter for demos."
+    echo
+    echo "Valid os types are: $IMG_TYPES"
+    exit 0    
+}
+
+[ "-h" == "$1" ] && print_help
+
 TYPE=$1
 
 checktype $TYPE

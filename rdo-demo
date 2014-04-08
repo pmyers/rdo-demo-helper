@@ -3,6 +3,18 @@
 srcdir=$(readlink -m $(dirname $0))
 source $srcdir/common
 
+print_help() {
+    echo "$0 [os type] [num hosts] [release]"
+    echo
+    echo "This script is run following rdo-demo-prep and actually runs"
+    echo "a demo script to show the OpenStack functionality via the various"
+    echo "REST APIs and command line tools"
+    echo
+    echo "Valid os types are: $IMG_TYPES" 
+    echo "Valid OpenStack releases are: $RELEASES"
+    exit 0
+}
+
 TYPE=$1
 NUM=$2
 REL=$3

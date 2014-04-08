@@ -5,6 +5,17 @@ source $srcdir/common
 
 SYSPREP_OPTS=$(virt-sysprep --list-operations | grep \* | awk '{print $1}' | grep -v -e ssh-userdir -e script | xargs | tr ' ' ',')
 
+print_help() {
+    echo "$0 [os type] [num hosts]"
+    echo
+    echo "This script generates a series of guest images based on a single"
+    echo "base image file that are used by other scripts like rdo-demo-prep"
+    echo "and rdo-demo"
+    echo
+    echo "Valid os types are: $IMG_TYPES"
+    exit 0
+}
+
 TYPE=$1
 num_hosts=$2
 

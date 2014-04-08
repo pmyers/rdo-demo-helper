@@ -3,6 +3,19 @@
 srcdir=$(readlink -m $(dirname $0))
 source $srcdir/common
 
+print_help() {
+    echo "$0 [os type] [num hosts]"
+    echo
+    echo "This script saves a set of guests that were created following a"
+    echo "run of rdo-demo-prep, so that later demos can be run following a"
+    echo "run of rdo-demo-restore"
+    echo
+    echo "Valid os types are: $IMG_TYPES"
+    exit 0
+}
+
+[ "-h" == "$1" ] && print_help
+
 TYPE=$1
 NUM=$2
 

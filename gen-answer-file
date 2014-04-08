@@ -3,6 +3,19 @@
 srcdir=$(readlink -m $(dirname $0))
 source $srcdir/common
 
+print_help() {
+    echo "$0 [os type] [num hosts] [base answer file]"
+    echo
+    echo "This script takes an answer file template and generates one"
+    echo "that can be used with the proper number of hosts (controller and"
+    echo "compute nodes)."
+    echo
+    echo "Valid os types are: $IMG_TYPES"
+    exit 0
+}
+
+[ "-h" == "$1" ] && print_help
+
 TYPE=$1
 NUM=$2
 BASE=$3
