@@ -73,7 +73,10 @@ elif [ "$TYPE" == "rhel7" ]; then
 elif [ "$TYPE" == "centos6" ]; then
     sudo virt-builder --hostname $vm --format qcow2 --size 15G --update \
         --root-password password:password --selinux-relabel \
-        -o $VMS_DIR/$vm.img centos-6 || error
+        -o $VMS_DIR/$vm-tmp.img centos-6 || error
+    sudo TMPDIR=$VMS_DIR virt-sparsify --compress $VMS_DIR/$vm-tmp.img \
+        $VMS_DIR/$vm.img || error
+    sudo rm -fv $VMS_DIR/$vm-tmp.img
 elif [ "$TYPE" == "fedora20" ]; then
     # NOTE: It appears that the image used by virt-builder for F20
     #       is totally broken and not the same one that is actually shipped
@@ -91,7 +94,7 @@ elif [ "$TYPE" == "fedora20" ]; then
     # NOTE: The Fedora cloud image is 2GB rootfs.  virt-builder would resize
     # this for us but since virt-builder has a broken image, we do it manually
     rm -fv $vm-tmp.img
-    qemu-img create -f qcow2 -o preallocation=metadata $VMS_DIR/$vm-tmp.img 15G
+    qemu-img create -f qcow2 $VMS_DIR/$vm-tmp.img 15G
     sudo virt-resize --expand /dev/sda1 $VMS_DIR/$vm.img $VMS_DIR/$vm-tmp.img
     mv -fv $VMS_DIR/$vm-tmp.img $VMS_DIR/$vm.img
 fi
