@@ -3,8 +3,6 @@
 srcdir=$(readlink -m $(dirname $0))
 source $srcdir/common
 
-SYSPREP_OPTS=$(virt-sysprep --list-operations | grep \* | awk '{print $1}' | grep -v -e ssh-userdir | xargs | tr ' ' ',')
-
 print_help() {
     echo "$0 [os type]"
     echo
@@ -99,7 +97,7 @@ elif [ "$TYPE" == "fedora20" ]; then
     mv -fv $VMS_DIR/$vm-tmp.img $VMS_DIR/$vm.img
 fi
 
-sudo virt-sysprep --enable $SYSPREP_OPTS \
+sudo virt-sysprep --selinux-relabel --operations defaults,-ssh-userdir \
     --root-password password:password \
     --script $srcdir/sysprep-$TYPE \
     --firstboot $srcdir/firstboot-$TYPE \
