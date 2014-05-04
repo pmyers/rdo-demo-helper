@@ -54,6 +54,11 @@ cd rdo-demo-helper
 
 ./rdo-demo-prep centos6 3
 
+  This will create 3 virtual machines in a private network and launch them
+  in prep for running Packstack or some other installation tool.
+
+./rdo-demo-packstack centos6 3
+
   This will install packstack and run it on the first node.  The argument
   after 'centos6' indicates you want 3 virtual nodes in the cluster.  Node 1
   is the controller, all 3 will be compute nodes.  Following this, you should

@@ -1,0 +1,58 @@
+#!/bin/bash
+
+srcdir=$(readlink -m $(dirname $0))
+source $srcdir/common
+
+print_help() {
+    echo "$0 [os type] [num hosts] [release]"
+    echo
+    echo "This script kicks off a Packstack run across the specificed"
+    echo "hosts in a virtual datacenter"
+    echo
+    echo "Valid os types are: $IMG_TYPES"
+    echo "Valid OpenStack releases are: $RELEASES"
+    exit 0
+}
+
+TYPE=$1
+NUM=$2
+REL=$3
+
+checktype $TYPE
+test -z "$NUM" && NUM=1
+test -z "$REL" && REL=icehouse
+
+mgmt=admin@${TYPE}1
+
+sub=$(getsub $TYPE)
+privsub=$(( $sub - 50 ))
+ans="packstack-rdo-${REL}.ans"
+
+foreach_host $TYPE $NUM "$VIRSH start"
+sshwait_hosts $TYPE $NUM
+
+foreach_hostssh $TYPE $NUM "cd rdo-demo-helper && git pull && root-ssh-setup"
+
+$ssh $mgmt "rdo-release $REL"
+sleepwait 5
+
+foreach_hostssh $TYPE $NUM "sudo reboot"
+sleepwait 5
+
+sshwait_hosts $TYPE $NUM
+echo -ne "${txtblu}"
+foreach_hostssh $TYPE $NUM "uname -a"
+echo -ne "${txtrst}"
+
+for i in `seq 1 $NUM`; do
+    ip="$(( $i + 100))"
+    $ssh admin@$TYPE$i "gen-static-ifcfg eth1 192.168.$privsub.$ip"
+done
+
+foreach_hostssh $TYPE $NUM "sudo ifup eth1"
+
+$ssh $mgmt "sudo yum-config-manager --enable epel"
+$ssh $mgmt "gen-answer-file $TYPE $NUM rdo-demo-helper/$ans"
+$ssh $mgmt "packstack --answer-file=packstack.ans"
+
+$ssh $mgmt "rdo-${REL}-workarounds"
