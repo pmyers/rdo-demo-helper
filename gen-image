@@ -3,8 +3,6 @@
 srcdir=$(readlink -m $(dirname $0))
 source $srcdir/common
 
-SYSPREP_OPTS=$(virt-sysprep --list-operations | grep \* | awk '{print $1}' | grep -v -e ssh-userdir -e script | xargs | tr ' ' ',')
-
 print_help() {
     echo "$0 [os type] [num hosts]"
     echo
@@ -49,7 +47,7 @@ for i in `seq 1 $num_hosts`; do
     sudo qemu-img create -o backing_file=$VMS_DIR/zzz-$TYPE.img \
         -f qcow2 $VMS_DIR/$image.img || error
 
-    sudo virt-sysprep --no-selinux-relabel --enable $SYSPREP_OPTS \
+    sudo virt-sysprep --operations defaults,-ssh-userdir \
 	    --hostname $image -a $VMS_DIR/$image.img || error
 
     sudo virt-install -n $image -r 4096 --vcpus 2 --noautoconsole \
