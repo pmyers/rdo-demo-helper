@@ -71,10 +71,7 @@ elif [ "$TYPE" == "rhel7" ]; then
 elif [ "$TYPE" == "centos6" ]; then
     sudo virt-builder --hostname $vm --format qcow2 --size 15G --update \
         --root-password password:password --selinux-relabel \
-        -o $VMS_DIR/$vm-tmp.img centos-6 || error
-    sudo TMPDIR=$VMS_DIR virt-sparsify --compress $VMS_DIR/$vm-tmp.img \
-        $VMS_DIR/$vm.img || error
-    sudo rm -fv $VMS_DIR/$vm-tmp.img
+        -o $VMS_DIR/$vm.img centos-6 || error
 elif [ "$TYPE" == "fedora20" ]; then
     # NOTE: It appears that the image used by virt-builder for F20
     #       is totally broken and not the same one that is actually shipped
@@ -125,6 +122,14 @@ $ssh admin@$vm sudo yum install nfs-utils emacs-color-theme fpaste \
 
 $ssh admin@$vm git clone https://github.com/pmyers/rdo-demo-helper.git
 
-$ssh admin@$vm sudo yum install $(cat $srcdir/devstack-deps | xargs) -y
+$ssh admin@$vm sudo yum install $(cat $srcdir/devstack-deps | xargs) -y \
+    --skip-broken
 
 $ssh admin@$vm "echo 'export PATH=$PATH:~/rdo-demo-helper' >> .bashrc"
+
+$VIRSH shutdown $vm > /dev/null 2>&1
+virsh_shutdown_wait $vm
+
+sudo TMPDIR=$VMS_DIR virt-sparsify --compress $VMS_DIR/$vm.img \
+    $VMS_DIR/$vm-sparse.img || error
+sudo mv -v $VMS_DIR/$vm-sparse.img $VMS_DIR/$vm.img
