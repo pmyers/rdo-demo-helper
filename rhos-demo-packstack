@@ -51,7 +51,6 @@ done
 
 foreach_hostssh $TYPE $NUM "sudo ifup eth1"
 
-$ssh $mgmt "sudo yum-config-manager --enable epel"
 $ssh $mgmt "gen-answer-file $TYPE $NUM rdo-demo-helper/$ans"
 $ssh $mgmt "packstack --answer-file=packstack.ans"
 

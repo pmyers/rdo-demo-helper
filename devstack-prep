@@ -13,6 +13,9 @@ sshwait $VM
 
 $ssh $VM cd rdo-demo-helper && git pull
 
+$ssh $VM sudo yum install $(cat $srcdir/devstack-deps | xargs) -y \
+    --skip-broken
+
 # Note: Remove libxslt-devel from this once devstack dependencies are fixed
 $ssh $VM sudo rm -f /etc/yum.repos.d/epel.repo
 

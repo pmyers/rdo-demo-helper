@@ -109,21 +109,15 @@ ssh-clean $vm
 sshwait admin@$vm
 
 $ssh admin@$vm sudo yum install yum deltarpm -y
-$ssh admin@$vm sudo yum update -y
+$ssh admin@$vm sudo yum update --disablerepo=epel -y
 
-if [ $(echo $TYPE | grep -e rhel -e centos) ]; then
-    $ssh admin@$vm sudo yum install --enablerepo=epel git-all git -y
-else
-    $ssh admin@$vm sudo yum install git-all git -y
-fi
+$ssh admin@$vm sudo yum install --enablerepo=epel git-all git -y
 
-$ssh admin@$vm sudo yum install nfs-utils emacs-color-theme fpaste \
+$ssh admin@$vm sudo yum install --enablerepo=*server-opt \
+    nfs-utils emacs-color-theme fpaste \
     yum-config-manager yum-utils yum-plugin-priorities -y
 
 $ssh admin@$vm git clone https://github.com/pmyers/rdo-demo-helper.git
-
-$ssh admin@$vm sudo yum install $(cat $srcdir/devstack-deps | xargs) -y \
-    --skip-broken
 
 $ssh admin@$vm "echo 'export PATH=$PATH:~/rdo-demo-helper' >> .bashrc"
 

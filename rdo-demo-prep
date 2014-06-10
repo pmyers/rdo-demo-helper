@@ -26,4 +26,4 @@ foreach_host $TYPE $NUM "$VIRSH start"
 sshwait_hosts $TYPE $NUM
 
 foreach_hostssh $TYPE $NUM "cd rdo-demo-helper && git pull && root-ssh-setup"
-foreach_hostssh $TYPE $NUM "sudo yum update -y"
+foreach_hostssh $TYPE $NUM "sudo yum update --disablerepo=epel -y"
