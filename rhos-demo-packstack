@@ -33,7 +33,7 @@ sshwait_hosts $TYPE $NUM
 
 foreach_hostssh $TYPE $NUM "cd rdo-demo-helper && git pull && root-ssh-setup"
 
-$ssh $mgmt "rhos-release $REL"
+$ssh $mgmt "rdo-demo-helper/rhos-release $REL"
 sleepwait 5
 
 foreach_hostssh $TYPE $NUM "sudo reboot"
@@ -55,4 +55,4 @@ $ssh $mgmt "sudo yum-config-manager --enable epel"
 $ssh $mgmt "gen-answer-file $TYPE $NUM rdo-demo-helper/$ans"
 $ssh $mgmt "packstack --answer-file=packstack.ans"
 
-$ssh $mgmt "rdo-${REL}-workarounds"
+$ssh $mgmt "rhos-${REL}-workarounds"
