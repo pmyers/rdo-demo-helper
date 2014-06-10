@@ -12,7 +12,7 @@ print_help() {
     echo "You might want to consider running backup-base-domain prior to this"
     echo
     echo "Valid os types are: $IMG_TYPES"
-    echo "Valid OpenStack releases are: $RELEASES"
+    echo "Valid OpenStack releases are: $RDO_RELEASES"
     exit 0
 }
 

@@ -1,0 +1,38 @@
+#!/bin/bash
+
+srcdir=$(readlink -m $(dirname $0))
+source $srcdir/common
+
+print_help() {
+    echo "$0 [os type] [num hosts]"
+    echo
+    echo "This script takes a base image, creates a single host with"
+    echo "that base image used for running Foreman and then creates"
+    echo "num hosts additional blank virtual machines used for PXE"
+    echo "booting on a private virtual network"
+    echo
+    echo "Valid os types are: $IMG_TYPES"
+    exit 0
+}
+
+TYPE=$1
+NUM=$2
+
+checktype $TYPE
+test -z "$NUM" && NUM=1
+
+sub=$(getsub $TYPE)
+
+$srcdir/gen-image $TYPE $NUM "on" || error
+
+foreach_host $TYPE 1 "$VIRSH start"
+sshwait_hosts $TYPE 1
+
+foreach_hostssh $TYPE 1 "cd rdo-demo-helper && git pull && root-ssh-setup"
+foreach_hostssh $TYPE 1 "sudo yum update -y"
+
+$VIRSH shutdown ${TYPE}1 > /dev/null 2>&1
+virsh_shutdown_wait ${TYPE}1
+
+foreach_host $TYPE $NUM "$VIRSH start"
+sshwait_hosts $TYPE 1

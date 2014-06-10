@@ -1,7 +1,8 @@
 #!/bin/bash
 
 IMG_TYPES="centos6 rhel6 rhel7 fedora20"
-RELEASES="havana icehouse"
+RDO_RELEASES="havana icehouse"
+RHOS_RELEASES="4 5"
 
 ssh="ssh -txq"
 VIRSH="sudo virsh"

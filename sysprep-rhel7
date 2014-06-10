@@ -2,22 +2,5 @@
 
 rsync -v ~/.ssh/authorized_keys root/.ssh/
 
-cat <<EOL > etc/yum.repos.d/rhel7.repo
-[rhel-7-beta]
-name=RHEL 7.0 Beta
-baseurl=ftp://ftp.redhat.com/redhat/rhel/beta/7/x86_64/os/
-enabled=1
-gpgcheck=0
-EOL
-
-cat <<EOL > etc/yum.repos.d/epel.repo
-[epel]
-name=Extra Packages for Enterprise Linux 7 - $basearch
-baseurl=http://dl.fedoraproject.org/pub/epel/beta/7/x86_64/
-failovermethod=priority
-enabled=0
-gpgcheck=0
-EOL
-
 echo "Done"
 

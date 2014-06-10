@@ -16,4 +16,9 @@ restorecon -rv /root
 echo "admin ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 visudo -c
 
+rpm -ivh http://goo.gl/gOPFeq
+rhos-release 5
+
+rpm -ivh http://mirror.pnl.gov/epel/beta/7/x86_64/epel-release-7-0.1.noarch.rpm
+
 echo "Done"

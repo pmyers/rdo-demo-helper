@@ -11,7 +11,7 @@ print_help() {
     echo "REST APIs and command line tools"
     echo
     echo "Valid os types are: $IMG_TYPES" 
-    echo "Valid OpenStack releases are: $RELEASES"
+    echo "Valid OpenStack releases are: $RDO_RELEASES"
     exit 0
 }
 

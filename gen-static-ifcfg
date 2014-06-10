@@ -1,16 +1,16 @@
 #!/bin/bash
 
-source $(dirname $0)/common
-
 netscripts=/etc/sysconfig/network-scripts
 
 iface=$1
 ip=$2
+gateway=$3
 
 cat <<EOF | sudo tee $netscripts/ifcfg-$iface
 DEVICE=$iface
 BOOTPROTO=static
 IPADDR=$ip
 NETMASK=255.255.255.0
+GATEWAY=$gateway
 ONBOOT=yes
 EOF

@@ -10,7 +10,7 @@ print_help() {
     echo "hosts in a virtual datacenter"
     echo
     echo "Valid os types are: $IMG_TYPES"
-    echo "Valid OpenStack releases are: $RDO_RELEASES"
+    echo "Valid RHEL OSP releases are: $RHOS_RELEASES"
     exit 0
 }
 
@@ -20,20 +20,20 @@ REL=$3
 
 checktype $TYPE
 test -z "$NUM" && NUM=1
-test -z "$REL" && REL=icehouse
+test -z "$REL" && REL=5
 
 mgmt=admin@${TYPE}1
 
 sub=$(getsub $TYPE)
 privsub=$(( $sub - 50 ))
-ans="packstack-rdo-${REL}.ans"
+ans="packstack-rhos-${REL}.ans"
 
 foreach_host $TYPE $NUM "$VIRSH start"
 sshwait_hosts $TYPE $NUM
 
 foreach_hostssh $TYPE $NUM "cd rdo-demo-helper && git pull && root-ssh-setup"
 
-$ssh $mgmt "rdo-release $REL"
+$ssh $mgmt "rhos-release $REL"
 sleepwait 5
 
 foreach_hostssh $TYPE $NUM "sudo reboot"

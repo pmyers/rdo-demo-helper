@@ -1,0 +1,61 @@
+#!/bin/bash
+
+srcdir=$(readlink -m $(dirname $0))
+source $srcdir/common
+
+print_help() {
+    echo "$0 [os type] [provisioning mode: on|off]"
+    echo
+    echo "This script generates the virtual mgmt and private networks"
+    echo
+    echo "Valid os types are: $IMG_TYPES"
+    exit 0    
+}
+
+[ "-h" == "$1" ] && print_help
+
+TYPE=$1
+PROVISIONING_MODE=$2
+
+checktype $TYPE
+test -z $VMS_DIR && error "VMS_DIR is not set"
+
+vm=zzz-$TYPE
+
+sub=$(getsub $TYPE)
+privsub=$(( $sub - 50 ))
+ipaddr=192.168.$sub.100
+
+mac=$(grep "zzz-@NAME@" $srcdir/net-mgmt \
+    | sed 's/.*mac="\(.*\)" name=.*/\1/' | sed "s/@MAC@/$privsub/")
+[ -n "$mac" ] && macopt=",mac=$mac"
+
+{
+    $VIRSH destroy $vm
+    $VIRSH undefine $vm
+    $VIRSH net-destroy $TYPE-mgmt && $VIRSH net-undefine $TYPE-mgmt
+    $VIRSH net-destroy $TYPE-priv && $VIRSH net-undefine $TYPE-priv
+
+    foreach_host $TYPE 10 "$VIRSH destroy"
+    foreach_host $TYPE 10 "$VIRSH undefine"
+} > /dev/null 2>&1
+
+tmp=$(mktemp)
+if [[ "$PROVISIONING_MODE" == "on" ]]; then
+    sed -e "s/@NAME@/$TYPE/g" -e "s/@SUB@/$sub/g" -e "s/@MAC@/$privsub/g" \
+        $srcdir/net-mgmt > $tmp
+else
+    sed -e "s/@NAME@/$TYPE/g" -e "s/@SUB@/$sub/g" \
+        $srcdir/net-mgmt-nodhcp > $tmp
+fi
+$VIRSH net-define $tmp
+
+tmp=$(mktemp)
+sed -e "s/@NAME@/$TYPE/g" -e "s/@SUB@/$privsub/g" \
+    $srcdir/net-priv > $tmp
+$VIRSH net-define $tmp
+
+$VIRSH net-start $TYPE-mgmt
+$VIRSH net-autostart $TYPE-mgmt
+$VIRSH net-start $TYPE-priv
+$VIRSH net-autostart $TYPE-priv

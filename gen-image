@@ -4,7 +4,7 @@ srcdir=$(readlink -m $(dirname $0))
 source $srcdir/common
 
 print_help() {
-    echo "$0 [os type] [num hosts]"
+    echo "$0 [os type] [num hosts] <provisioning mode on|off>"
     echo
     echo "This script generates a series of guest images based on a single"
     echo "base image file that are used by other scripts like rdo-demo-prep"
@@ -15,7 +15,8 @@ print_help() {
 }
 
 TYPE=$1
-num_hosts=$2
+NUM=$2
+PROVISIONING_MODE=$3
 
 checktype $TYPE
 test -z $VMS_DIR && error "VMS_DIR is not set"
@@ -24,14 +25,14 @@ test -f $VMS_DIR/zzz-$TYPE.img \
 
 sub=$(getsub $TYPE)
 privsub=$(( $sub - 50 ))
-[ -z "$num_hosts" ] && num_hosts=1
+[ -z "$NUM" ] && NUM=1
 
 refresh-storage-pools
 
 $VIRSH shutdown zzz-$TYPE > /dev/null 2>&1
 virsh_shutdown_wait zzz-$TYPE
 
-for i in `seq 1 $num_hosts`; do
+for i in `seq 1 $NUM`; do
     image="${TYPE}$i"
     ip="$(( $i + 100))"
     addhost $image 192.168.$sub.$ip
@@ -44,11 +45,19 @@ for i in `seq 1 $num_hosts`; do
     $VIRSH undefine $image 2> /dev/null
     test -f $VMS_DIR/$image.img && sudo rm -f $VMS_DIR/$image.img
 
-    sudo qemu-img create -o backing_file=$VMS_DIR/zzz-$TYPE.img \
-        -f qcow2 $VMS_DIR/$image.img || error
+    if [[ "$i" == "1" || "$PROVISIONING_MODE" != "on" ]]; then
+        sudo qemu-img create -o backing_file=$VMS_DIR/zzz-$TYPE.img \
+            -f qcow2 $VMS_DIR/$image.img || error
 
-    sudo virt-sysprep --operations defaults,-ssh-userdir \
-	    --hostname $image -a $VMS_DIR/$image.img || error
+        sudo virt-sysprep --operations defaults,-ssh-userdir \
+	        --hostname $image -a $VMS_DIR/$image.img || error
+
+        if [[ "$PROVISIONING_MODE" == "on" ]]; then
+            sudo virt-customize --run-command "/home/admin/rdo-demo-helper/gen-static-ifcfg eth0 192.168.$sub.101 192.168.$sub.1" -a $VMS_DIR/$image.img || error
+        fi
+    else
+        sudo qemu-img create -f qcow2 $VMS_DIR/$image.img 15G || error
+    fi
 
     sudo virt-install -n $image -r 4096 --vcpus 2 --noautoconsole \
         -w network=$TYPE-mgmt$macopt -w network=$TYPE-priv \

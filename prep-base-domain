@@ -112,9 +112,9 @@ $ssh admin@$vm sudo yum install yum deltarpm -y
 $ssh admin@$vm sudo yum update -y
 
 if [ $(echo $TYPE | grep -e rhel -e centos) ]; then
-    $ssh admin@$vm sudo yum install --enablerepo=epel git-all -y
+    $ssh admin@$vm sudo yum install --enablerepo=epel git-all git -y
 else
-    $ssh admin@$vm sudo yum install git-all -y
+    $ssh admin@$vm sudo yum install git-all git -y
 fi
 
 $ssh admin@$vm sudo yum install nfs-utils emacs-color-theme fpaste \
