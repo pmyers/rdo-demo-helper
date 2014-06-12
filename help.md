@@ -7,7 +7,7 @@ prep-base-domain    - Generate a base guest image from a given os type
 backup-base-domain  - Backup base guest image for later use
 restore-base-domain - Restore base guest image from a backup
 rdo-demo-cache      - Install all RDO deps on a base image
-rdo-packstack-prep  - Create virtual datacenter
+rdo-prep-packstack  - Create virtual datacenter
 rdo-demo-packstack  - Run Packstack on the virtual datacenter
 rdo-demo-save       - Backup virtual datacenter images prior to a demo
 rdo-demo-restore    - Restore virtual datacenter images after a demo

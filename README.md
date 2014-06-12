@@ -52,7 +52,7 @@ cd rdo-demo-helper
   This will populate the base image with all of the packages needed so that
   later runs of the scripts below don't have to access much over the internet
 
-./rdo-packstack-prep centos6 3
+./rdo-prep-packstack centos6 3
 
   This will create 3 virtual machines in a private network and launch them
   in prep for running Packstack or some other installation tool.
