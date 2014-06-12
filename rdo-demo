@@ -6,7 +6,7 @@ source $srcdir/common
 print_help() {
     echo "$0 [os type] [num hosts] [release]"
     echo
-    echo "This script is run following rdo-demo-prep and actually runs"
+    echo "This script is run following rdo|rhos-*-prep and actually runs"
     echo "a demo script to show the OpenStack functionality via the various"
     echo "REST APIs and command line tools"
     echo

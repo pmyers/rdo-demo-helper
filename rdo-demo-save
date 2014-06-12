@@ -7,7 +7,7 @@ print_help() {
     echo "$0 [os type] [num hosts]"
     echo
     echo "This script saves a set of guests that were created following a"
-    echo "run of rdo-demo-prep, so that later demos can be run following a"
+    echo "run of rdo|rhos-*-prep, so that later demos can be run following a"
     echo "run of rdo-demo-restore"
     echo
     echo "Valid os types are: $IMG_TYPES"

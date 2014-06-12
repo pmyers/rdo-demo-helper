@@ -7,7 +7,7 @@ print_help() {
     echo "$0 [os type] [num hosts] <provisioning mode on|off>"
     echo
     echo "This script generates a series of guest images based on a single"
-    echo "base image file that are used by other scripts like rdo-demo-prep"
+    echo "base image file that are used by other scripts like rdo|rhos-*-prep"
     echo "and rdo-demo"
     echo
     echo "Valid os types are: $IMG_TYPES"
