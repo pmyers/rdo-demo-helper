@@ -33,7 +33,10 @@ sshwait_hosts $TYPE $NUM
 
 foreach_hostssh $TYPE $NUM "cd rdo-demo-helper && git pull && root-ssh-setup"
 
-$ssh $mgmt "rdo-demo-helper/rhos-release $REL"
+$ssh $mgmt "sudo rpm -Uvh http://goo.gl/gOPFeq"
+$ssh $mgmt "sudo rhos-release $REL"
+$ssh $mgmt "sudo yum update --disablerepo=epel -y"
+$ssh $mgmt "sudo yum install --disablerepo=epel openstack-packstack -y"
 sleepwait 5
 
 foreach_hostssh $TYPE $NUM "sudo reboot"

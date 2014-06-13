@@ -34,7 +34,9 @@ sshwait $vm
 
 $ssh $vm "cd rdo-demo-helper && git pull && root-ssh-setup"
 
-$ssh $vm "rdo-release $REL"
+$ssh $mgmt "sudo yum install -y http://rdo.fedorapeople.org/openstack/openstack-$1/rdo-release-$REL.rpm"
+$ssh $mgmt "sudo yum update -y"
+$ssh $mgmt "sudo yum install openstack-packstack -y"
 
 $ssh $vm "sudo yum-config-manager --enable epel"
 

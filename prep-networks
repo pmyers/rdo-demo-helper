@@ -30,23 +30,23 @@ mac=$(grep "zzz-@NAME@" $srcdir/net-mgmt \
     | sed 's/.*mac="\(.*\)" name=.*/\1/' | sed "s/@MAC@/$privsub/")
 [ -n "$mac" ] && macopt=",mac=$mac"
 
-{
-    $VIRSH destroy $vm
-    $VIRSH undefine $vm
-    $VIRSH net-destroy $TYPE-mgmt && $VIRSH net-undefine $TYPE-mgmt
-    $VIRSH net-destroy $TYPE-priv && $VIRSH net-undefine $TYPE-priv
+$VIRSH shutdown $vm > /dev/null 2>&1
+virsh_shutdown_wait $vm
+foreach_host $TYPE 10 "$VIRSH shutdown" > /dev/null 2>&1
+foreach_host $TYPE 10 virsh_shutdown_wait
 
-    foreach_host $TYPE 10 "$VIRSH destroy"
-    foreach_host $TYPE 10 "$VIRSH undefine"
-} > /dev/null 2>&1
+$VIRSH net-destroy $TYPE-mgmt && $VIRSH net-undefine $TYPE-mgmt
+$VIRSH net-destroy $TYPE-priv && $VIRSH net-undefine $TYPE-priv
 
 tmp=$(mktemp)
 if [[ "$PROVISIONING_MODE" == "on" ]]; then
-    sed -e "s/@NAME@/$TYPE/g" -e "s/@SUB@/$sub/g" -e "s/@MAC@/$privsub/g" \
-        $srcdir/net-mgmt > $tmp
-else
+    info "Setting up $TYPE mgmt network without libvirt dhcp"
     sed -e "s/@NAME@/$TYPE/g" -e "s/@SUB@/$sub/g" \
         $srcdir/net-mgmt-nodhcp > $tmp
+else
+    info "Setting up $TYPE mgmt network with libvirt dhcp"
+    sed -e "s/@NAME@/$TYPE/g" -e "s/@SUB@/$sub/g" -e "s/@MAC@/$privsub/g" \
+        $srcdir/net-mgmt > $tmp
 fi
 $VIRSH net-define $tmp
 

@@ -1,0 +1,70 @@
+#!/bin/bash
+
+srcdir=$(readlink -m $(dirname $0))
+source $srcdir/common
+
+print_help() {
+    echo "$0 [os type] [num hosts] [release]"
+    echo
+    echo "This script kicks off a Foreman install across the specificed"
+    echo "hosts in a virtual datacenter"
+    echo
+    echo "Valid os types are: $IMG_TYPES"
+    echo "Valid OpenStack releases are: $RHOS_RELEASES"
+    exit 0
+}
+
+TYPE=$1
+NUM=$2
+REL=$3
+
+checktype $TYPE
+test -z "$NUM" && NUM=1
+test -z "$REL" && REL=5
+
+mgmt=admin@${TYPE}1
+
+sub=$(getsub $TYPE)
+privsub=$(( $sub - 50 ))
+
+foreach_host $TYPE $NUM "$VIRSH shutdown" > /dev/null 2>&1
+foreach_host $TYPE $NUM virsh_shutdown_wait
+
+foreach_host $TYPE 1 "$VIRSH start"
+sshwait_hosts $TYPE 1
+
+$ssh $mgmt "gen-static-ifcfg eth1 192.168.$privsub.101"
+foreach_hostssh $TYPE 1 "sudo ifup eth1"
+
+$ssh $mgmt "sudo yum install -y ntp && sudo chkconfig ntpd on && sudo service ntpd start"
+
+for i in `seq 1 $NUM`; do
+    ip="$(( $i + 100))"
+    $ssh $mgmt ". rdo-demo-helper/common && addhost ${TYPE}$i.rdo 192.168.$sub.$ip"
+done
+
+# https://bugzilla.redhat.com/show_bug.cgi?id=1105289
+$ssh $mgmt "sudo lokkit -m eth0 -s ssh -s http -s https -s dns -s tftp -p 111:tcp -p 111:udp -p 32803:tcp -p 32769:udp -p 2020:udp -p 2020:tcp -p 662:udp -p 662:tcp -p 892:udp -p 892:tcp -p 875:udp -p 875:tcp -p 2049:udp -p 2049:tcp -p 8140:udp -p 8140:tcp"
+
+$ssh $mgmt "sudo yum install -y foreman-installer-staypuft"
+
+# https://bugzilla.redhat.com/show_bug.cgi?id=1102395#c1
+$ssh $mgmt "grep GC.disable /usr/bin/puppet || sudo sed -i '/#!\/usr\/bin\/ruby/a GC.disable' /usr/bin/puppet"
+
+$ssh $mgmt "sudo staypuft-installer"
+# http://download.eng.rdu2.redhat.com/rel-eng/RHEL-7.0-RC-3.1/compose/Server/x86_64/os/
+
+# Login to http://rhel61 with admin:changeme
+
+# Add the following in Foreman to Hosts->Provision-Templates (2nd page)
+# Click on 'Kickstart RHEL default'.  In the template editor below:
+# <%= snippet 'redhat_register' %> add the following lines:
+#
+# yum remove puppet -y
+# find /var/lib/puppet/ssl -type f -delete
+# rpm -Uvh http://goo.gl/gOPFeq
+# rhos-release 5
+# yum clean all
+# yum install nc -y
+
+# Configure->Host Groups->base_RedHat_7->Operating System->root password

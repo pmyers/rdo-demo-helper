@@ -21,18 +21,22 @@ NUM=$2
 checktype $TYPE
 test -z "$NUM" && NUM=1
 
+mgmt=admin@${TYPE}1
+
 sub=$(getsub $TYPE)
+
+$srcdir/prep-networks $TYPE "on" || error
 
 $srcdir/gen-image $TYPE $NUM "on" || error
 
 foreach_host $TYPE 1 "$VIRSH start"
 sshwait_hosts $TYPE 1
 
-foreach_hostssh $TYPE 1 "cd rdo-demo-helper && git pull && root-ssh-setup"
-foreach_hostssh $TYPE 1 "sudo yum update --disablerepo=epel -y"
+$ssh $mgmt "cd rdo-demo-helper && git pull && root-ssh-setup"
+$ssh $mgmt "sudo yum-config-manager --disable epel"
+$ssh $mgmt "sudo rpm -Uvh http://goo.gl/gOPFeq"
+$ssh $mgmt "sudo rhos-release -u"
+$ssh $mgmt "sudo yum clean all && sudo yum update -y"
 
 $VIRSH shutdown ${TYPE}1 > /dev/null 2>&1
 virsh_shutdown_wait ${TYPE}1
-
-foreach_host $TYPE $NUM "$VIRSH start"
-sshwait_hosts $TYPE 1

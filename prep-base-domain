@@ -32,32 +32,17 @@ mac=$(grep "zzz-@NAME@" $srcdir/net-mgmt \
     | sed 's/.*mac="\(.*\)" name=.*/\1/' | sed "s/@MAC@/$privsub/")
 [ -n "$mac" ] && macopt=",mac=$mac"
 
-refresh-storage-pools
-
 {
     $VIRSH destroy $vm
     $VIRSH undefine $vm
-    $VIRSH net-destroy $TYPE-mgmt && $VIRSH net-undefine $TYPE-mgmt
-    $VIRSH net-destroy $TYPE-priv && $VIRSH net-undefine $TYPE-priv
 
     foreach_host $TYPE 10 "$VIRSH destroy"
     foreach_host $TYPE 10 "$VIRSH undefine"
 } > /dev/null 2>&1
 
-tmp=$(mktemp)
-sed -e "s/@NAME@/$TYPE/g" -e "s/@SUB@/$sub/g" -e "s/@MAC@/$privsub/g" \
-    $srcdir/net-mgmt > $tmp
-$VIRSH net-define $tmp
+$srcdir/prep-networks $TYPE || error
 
-tmp=$(mktemp)
-sed -e "s/@NAME@/$TYPE/g" -e "s/@SUB@/$privsub/g" \
-    $srcdir/net-priv > $tmp
-$VIRSH net-define $tmp
-
-$VIRSH net-start $TYPE-mgmt
-$VIRSH net-autostart $TYPE-mgmt
-$VIRSH net-start $TYPE-priv
-$VIRSH net-autostart $TYPE-priv
+refresh-storage-pools
 
 sudo chown $USER $VMS_DIR/$vm.img 2> /dev/null
 IMPORT_IMG=$VMS_DIR/bak/$TYPE-guest.img

@@ -1,5 +1,6 @@
 <network>
   <name>@NAME@-mgmt</name>
+  <domain name="rdo"/>
   <forward mode='nat'>
     <nat>
       <port start='1024' end='65535'/>
