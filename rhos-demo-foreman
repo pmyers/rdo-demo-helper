@@ -38,20 +38,20 @@ foreach_hostssh $TYPE 1 "sudo ifup eth1"
 
 $ssh $mgmt "sudo yum install -y ntp && sudo chkconfig ntpd on && sudo service ntpd start"
 
-for i in `seq 1 $NUM`; do
-    ip="$(( $i + 100))"
-    $ssh $mgmt ". rdo-demo-helper/common && addhost ${TYPE}$i.rdo 192.168.$sub.$ip"
-done
-
 # https://bugzilla.redhat.com/show_bug.cgi?id=1105289
 $ssh $mgmt "sudo lokkit -m eth0 -s ssh -s http -s https -s dns -s tftp -p 111:tcp -p 111:udp -p 32803:tcp -p 32769:udp -p 2020:udp -p 2020:tcp -p 662:udp -p 662:tcp -p 892:udp -p 892:tcp -p 875:udp -p 875:tcp -p 2049:udp -p 2049:tcp -p 8140:udp -p 8140:tcp"
 
+# Install Staypuft
 $ssh $mgmt "sudo yum install -y foreman-installer-staypuft"
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=1102395#c1
 $ssh $mgmt "grep GC.disable /usr/bin/puppet || sudo sed -i '/#!\/usr\/bin\/ruby/a GC.disable' /usr/bin/puppet"
 
+# Run Staypuft Installer
 $ssh $mgmt "sudo staypuft-installer"
+# Choose eth0, accept defaults for everything else
+# When prompted for subscription manager info, you can use this internal
+# repo instead if desired.
 # http://download.eng.bos.redhat.com/released/RHEL-7/7.0/Server/x86_64/os/
 
 # Login to http://rhel61 with admin:changeme
@@ -68,3 +68,13 @@ $ssh $mgmt "sudo staypuft-installer"
 # yum install nc -y
 
 # Configure->Host Groups->base_RedHat_7->Operating System->root password
+
+# Create a new Deployment in the OpenStack Installer Plugin
+# OpenStack Installer->New Deployment
+
+# https://bugzilla.redhat.com/show_bug.cgi?id=1107794
+# Cinder Storage nodes will freeze at approx 60%
+# To work around:
+# Configure->Host Groups->Cinder Block Storage->Puppet Classes
+# Add quickstack::storage_backends::cinder
+# On Cinder hosts: service puppet restart
