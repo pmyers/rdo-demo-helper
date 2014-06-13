@@ -52,7 +52,7 @@ $ssh $mgmt "sudo yum install -y foreman-installer-staypuft"
 $ssh $mgmt "grep GC.disable /usr/bin/puppet || sudo sed -i '/#!\/usr\/bin\/ruby/a GC.disable' /usr/bin/puppet"
 
 $ssh $mgmt "sudo staypuft-installer"
-# http://download.eng.rdu2.redhat.com/rel-eng/RHEL-7.0-RC-3.1/compose/Server/x86_64/os/
+# http://download.eng.bos.redhat.com/released/RHEL-7/7.0/Server/x86_64/os/
 
 # Login to http://rhel61 with admin:changeme
 
