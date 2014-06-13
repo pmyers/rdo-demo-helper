@@ -44,9 +44,10 @@ Prerequisites:
 
 Packstack Instructions:
 -----------------------
-These instructions are for CentOS 6 but should would similarly for RHEL 6 and RHEL 7
-Just swap out centos6 below with rhel6 or rhel7.  Note, rhel6 and rhel7 need you
-to first download the qcow2 guest images.  See instructions above.
+These instructions are for CentOS 6 but should would similarly for RHEL 6 
+and RHEL 7.  Just swap out centos6 below with rhel6 or rhel7.  Note, rhel6
+and rhel7 need you to first download the qcow2 guest images.  See instructions
+above.
 
 ./prep-base-domain centos6
 
@@ -90,11 +91,12 @@ to first download the qcow2 guest images.  See instructions above.
 
 RHOS Foreman Instructions:
 --------------------------
-These instructions are for using a RHEL 6.5 VM as the Foreman provisioning server
-while the other hosts in the environment are provisioned with RHEL 7.  The RHEL 6.5
-qcow2 image is needed for this.  The RHEL 7 machines are kickstart installed, so you
-do not need the RHEL 7 qcow2 for these steps.  See the Prerequisites section above
-for how to put the RHEL 6 qcow2 in the proper location.
+These instructions are for using a RHEL 6.5 VM as the Foreman provisioning
+server while the other hosts in the environment are provisioned with RHEL 7.
+The RHEL 6.5 qcow2 image is needed for this.  The RHEL 7 machines are
+kickstart installed, so you do not need the RHEL 7 qcow2 for these steps.
+See the Prerequisites section above for how to put the RHEL 6 qcow2 in the
+proper location.
 
 ./prep-base-domain rhel6
 
@@ -105,26 +107,27 @@ for how to put the RHEL 6 qcow2 in the proper location.
 
   This creates 1 image backed by the zzz-rhel6 image for installing Foreman on.
   It creates 4 additional VMs with blank disks, that are used for kickstart 
-  provisioning RHEL 7.  Note: This also changes the Libvirt network for rhel7-mgmt
-  to disable dhcp, so that Foreman can take over this service.
+  provisioning RHEL 7.  Note: This also changes the Libvirt network for
+  rhel7-mgmt to disable dhcp, so that Foreman can take over this service.
 
-  Five hosts are needed here.  One for Foreman, one for Controller, one for Swift,
-  one for Cinder and on for Compute.  You can increase the number beyond 5 if you
-  want multiple compute nodes, HA controllers, etc.
+  Five hosts are needed here.  One for Foreman, one for Controller, one for
+  Swift, one for Cinder and on for Compute.  You can increase the number
+  beyond 5 if you want multiple compute nodes, HA controllers, etc.
 
 ./rhos-demo-foreman rhel6 5
  
   This boots the first node in the virtual datacenter, installs Foreman on it
   and runs the foreman installer.  There foreman installer is interactive, so
-  some questions will need to be answered.  Details are provided as comments in the
-  script.
+  some questions will need to be answered.  Details are provided as comments
+  in the script.
 
-  After Foreman installs, there are some non-interactive steps run to workaround
-  known issues/bugs.  As these bugs are resolved, the hacks will be removed.
+  After Foreman installs, there are some non-interactive steps run to
+  workaround known issues/bugs.  As these bugs are resolved, the hacks will
+  be removed.
 
-  Finally, the remaining steps for deploying RHOS on these nodes are manual and
-  controlled through the Foreman UI itself.  The comments in the end of the
-  script give some details about how to do this.
+  Finally, the remaining steps for deploying RHOS on these nodes are manual
+  and controlled through the Foreman UI itself.  The comments in the end of
+  the script give some details about how to do this.
 
 Notes:
 ------
