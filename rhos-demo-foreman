@@ -36,6 +36,7 @@ sshwait_hosts $TYPE 1
 $ssh $mgmt "gen-static-ifcfg eth1 192.168.$privsub.101"
 foreach_hostssh $TYPE 1 "sudo ifup eth1"
 
+$ssh $mgmt "sudo yum clean all"
 $ssh $mgmt "sudo yum install -y ntp && sudo chkconfig ntpd on && sudo service ntpd start"
 
 # https://bugzilla.redhat.com/show_bug.cgi?id=1105289
@@ -55,6 +56,11 @@ $ssh $mgmt "sudo staypuft-installer"
 # http://download.eng.bos.redhat.com/released/RHEL-7/7.0/Server/x86_64/os/
 
 # Login to http://rhel61 with admin:changeme
+
+# Set up NTP on your clients
+# under Hosts -> Operating System -> RedHat 7.0
+# under the Parameters setcion add ntp-server
+# add value of an accessible ntp server (clock.redhat.com)
 
 # Add the following in Foreman to Hosts->Provision-Templates (2nd page)
 # Click on 'Kickstart RHEL default'.  In the template editor below:
