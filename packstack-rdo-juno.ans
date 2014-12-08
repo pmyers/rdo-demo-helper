@@ -40,7 +40,7 @@ CONFIG_SWIFT_INSTALL=y
 
 # Set to 'y' if you would like Packstack to install OpenStack
 # Metering (Ceilometer)
-CONFIG_CEILOMETER_INSTALL=y
+CONFIG_CEILOMETER_INSTALL=n
 
 # Set to 'y' if you would like Packstack to install OpenStack
 # Orchestration (Heat)
