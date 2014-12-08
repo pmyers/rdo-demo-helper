@@ -22,7 +22,7 @@ TYPE=$1
 REL=$2
 
 checktype $TYPE
-test -z "$REL" && REL=icehouse
+test -z "$REL" && REL=juno
 
 vm=admin@zzz-$TYPE
 
@@ -33,10 +33,9 @@ $VIRSH start zzz-$TYPE
 sshwait $vm
 
 $ssh $vm "cd rdo-demo-helper && git pull && root-ssh-setup"
-
-$ssh $mgmt "sudo yum install -y http://rdo.fedorapeople.org/openstack/openstack-$1/rdo-release-$REL.rpm"
-$ssh $mgmt "sudo yum update -y"
-$ssh $mgmt "sudo yum install openstack-packstack -y"
+$ssh $vm "sudo yum install -y http://rdo.fedorapeople.org/openstack/openstack-$REL/rdo-release-$REL.rpm"
+$ssh $vm "sudo yum update -y"
+$ssh $vm "sudo yum install openstack-packstack -y"
 
 $ssh $vm "sudo yum-config-manager --enable epel"
 

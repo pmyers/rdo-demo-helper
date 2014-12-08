@@ -1,8 +1,8 @@
 #!/bin/bash
 
-IMG_TYPES="centos6 rhel6 rhel7 fedora20"
-RDO_RELEASES="havana icehouse"
-RHOS_RELEASES="4 5"
+IMG_TYPES="centos6 centos7 rhel6 rhel7 fedora20"
+RDO_RELEASES="icehouse juno"
+RHOS_RELEASES="5 6"
 
 ssh="ssh -txq"
 VIRSH="sudo virsh"
@@ -196,6 +196,7 @@ osvariant() {
     local type=$1
     
     [ "$type" == "centos6" ] && type="rhel6"
+    [ "$type" == "centos7" ] && type="rhel7"
 
     echo $type
 }

@@ -20,7 +20,7 @@ REL=$3
 
 checktype $TYPE
 test -z "$NUM" && NUM=1
-test -z "$REL" && REL=icehouse
+test -z "$REL" && REL=juno
 
 mgmt=admin@${TYPE}1
 
@@ -33,7 +33,7 @@ sshwait_hosts $TYPE $NUM
 
 foreach_hostssh $TYPE $NUM "cd rdo-demo-helper && git pull && root-ssh-setup"
 
-$ssh $mgmt "sudo yum install -y http://rdo.fedorapeople.org/openstack/openstack-$1/rdo-release-$REL.rpm"
+$ssh $mgmt "sudo yum install -y http://rdo.fedorapeople.org/openstack/openstack-$REL/rdo-release-$REL.rpm"
 $ssh $mgmt "sudo yum update -y"
 $ssh $mgmt "sudo yum install openstack-packstack -y"
 sleepwait 5

@@ -24,9 +24,9 @@ rsync -av etc/skel/ root
 
 cat <<EOL > etc/yum.repos.d/epel.repo
 [epel]
-name=Extra Packages for Enterprise Linux 6 - $basearch
-#baseurl=http://download.fedoraproject.org/pub/epel/6/$basearch
-mirrorlist=https://mirrors.fedoraproject.org/metalink?repo=epel-6&arch=x86_64
+name=Extra Packages for Enterprise Linux 7 - $basearch
+#baseurl=http://download.fedoraproject.org/pub/epel/7/$basearch
+mirrorlist=https://mirrors.fedoraproject.org/metalink?repo=epel-7&arch=x86_64
 failovermethod=priority
 enabled=0
 gpgcheck=0

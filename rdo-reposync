@@ -3,8 +3,7 @@
 dest=./rdo-repos
 
 sync-repo() {
-    reposync --setopt=reposdir=$(dirname $0)/rdo.repo \
-        -n -p $dest -r $1-openstack-$2
+    reposync -c yum.conf -n -p $dest -r $1-openstack-$2
     pushd $dest/$1-openstack-$2
     createrepo .
     popd
@@ -12,8 +11,6 @@ sync-repo() {
 
 mkdir -p $dest
 
-sync-repo el6 havana
-sync-repo el6 icehouse
-sync-repo fedora havana
-sync-repo fedora icehouse
+sync-repo el7 juno
+sync-repo fedora juno
 

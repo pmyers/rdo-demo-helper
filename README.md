@@ -2,7 +2,7 @@ rdo-demo-helper
 ===============
 
 Some scripts to help with setting up demos of RDO.  Goal is to work with RHEL6,
-RHEL7 Beta, CentOS6 and Fedora 20+.  All-in-One and multi-node setups work
+RHEL7, CentOS6, CentOS7 and Fedora 20+.  All-in-One and multi-node setups work
 using Packstack.  Eventually might try to script Foreman installs too.
 
 Prerequisites:
@@ -32,9 +32,9 @@ Prerequisites:
    rhel6-guest.img -> rhel-guest-image-6.5-20140523.0.x86_64.qcow2
 
    NOTE: Using RHEL 6 or 7 implies that you have access to some internal
-   repositories at Red Hat.  For non Red Hat users, CentOS 6 would be the way
-   to go, at least until I integrate subscription-manager support in the
-   scripts.
+   repositories at Red Hat.  For non Red Hat users, CentOS 6 or 7 would be
+   the way to go, at least until I integrate subscription-manager support in
+   the scripts.
 
 3. The script will add entries (via sudo) to /etc/hosts as a convenience
 

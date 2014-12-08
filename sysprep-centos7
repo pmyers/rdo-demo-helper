@@ -1,0 +1,5 @@
+#!/bin/bash
+
+rsync -v ~/.ssh/authorized_keys root/.ssh/
+
+echo "Done"
