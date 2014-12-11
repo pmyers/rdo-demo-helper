@@ -32,7 +32,7 @@ sshwait_hosts $TYPE $NUM
 
 foreach_hostssh $TYPE $NUM "cd rdo-demo-helper && git pull -nq"
 
-$ssh $mgmt "sudo cp -vf /root/keystonerc_demo ~"
+$ssh $mgmt "sudo cp -vf /root/keystonerc_demo ~ && sudo chown admin keystonerc_demo"
 
 # Note: demo tenant is autocreated by Packstack, so os-create-tenant
 # simply creates a separate tenant
