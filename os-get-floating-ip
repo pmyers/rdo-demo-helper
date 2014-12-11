@@ -6,6 +6,6 @@ inst=$1
 test -z "$inst" && error "Please provide an instance id"
 
 fip=$(nova list | grep $inst | awk -F'|' '{print $7}' | xargs \
-    | tr ' ' '\n' | grep -v "int=")
+    | tr ' ' '\n' | grep -v "private=")
 
 echo $fip

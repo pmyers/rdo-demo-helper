@@ -11,7 +11,7 @@ nova floating-ip-list
 set +v
 
 set -x
-fip=$(neutron floatingip-create external -f shell \
+fip=$(neutron floatingip-create public -f shell \
     | grep "floating_ip_address" | cut -d "=" -f 2 | xargs)
 set +x
 
