@@ -29,11 +29,15 @@ sub=$(getsub $TYPE)
 cp -vf $BASE packstack.ans
 sed -i s/@MGMT@/192.168.$sub.101/ packstack.ans
 
-computes="192.168.$sub.101"
-for i in `seq 2 $NUM`; do
-    ip="$(( $i + 100))"
-    computes="$computes,192.168.$sub.$ip"
-done
+if [ $NUM == 1 ]; then
+    computes="192.168.$sub.101"    
+else
+    computes="192.168.$sub.102"    
+    for i in `seq 3 $NUM`; do
+        ip="$(( $i + 100))"
+        computes="$computes,192.168.$sub.$ip"
+    done
+fi
 
 sed -i s/@COMP@/$computes/ packstack.ans
 
