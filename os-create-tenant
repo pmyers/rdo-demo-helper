@@ -3,12 +3,12 @@
 source $(dirname $0)/common
 
 set -v
-keystone user-create --name mydemo --pass password
-keystone role-create --name mydemo-role
-keystone tenant-create --name mydemo-tenant
+keystone user-create --name demo2 --pass password
+keystone role-create --name demo2-role
+keystone tenant-create --name demo2-tenant
 
-keystone user-role-add --user-id mydemo --role-id mydemo-role \
-    --tenant-id mydemo-tenant
+keystone user-role-add --user-id demo2 --role-id demo2-role \
+    --tenant-id demo2-tenant
 set +v
 
 waitkey
@@ -36,11 +36,11 @@ set -v
 keystone endpoint-list
 set +v
 
-cat <<EOF > keystonerc_mydemo
-export OS_USERNAME=mydemo
-export OS_TENANT_NAME=mydemo-tenant
+cat <<EOF > keystonerc_demo2
+export OS_USERNAME=demo2
+export OS_TENANT_NAME=demo2-tenant
 export OS_PASSWORD=password
 export OS_AUTH_URL=$OS_AUTH_URL
-export PS1='[\u@\h \W(keystone_mydemo)]\$ '
+export PS1='[\u@\h \W(keystone_demo2)]\$ '
 EOF
 

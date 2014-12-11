@@ -32,6 +32,8 @@ sshwait_hosts $TYPE $NUM
 
 foreach_hostssh $TYPE $NUM "cd rdo-demo-helper && git pull -nq"
 
+# Note: demo tenant is autocreated by Packstack, so os-create-tenant
+# simply creates a separate tenant
 waitkey "Setting up Keystone Users"
 $ssh $mgmt ". keystonerc_admin && os-create-tenant"
 
@@ -40,23 +42,26 @@ $ssh $mgmt ". keystonerc_admin && os-import-fedora"
 waitkey "Importing Cirros Guest Image"
 $ssh $mgmt ". keystonerc_admin && os-import-cirros"
 
-waitkey "Setting up External Bridge"
-$ssh $mgmt "os-setup-brex"
-waitkey "Setting up External Bridge in Neutron"
-$ssh $mgmt ". keystonerc_admin && os-config-neutron-gre $sub"
-waitkey "Setting up Tenant Network"
-$ssh $mgmt ". keystonerc_mydemo && os-config-neutron-gre-tenant"
+# Note: demo tenant has precreated fake network, so disabling manual creation
+#
+#waitkey "Setting up External Bridge"
+#$ssh $mgmt "os-setup-brex"
+#waitkey "Setting up External Bridge in Neutron"
+#$ssh $mgmt ". keystonerc_admin && os-config-neutron-gre $sub"
+#waitkey "Setting up Tenant Network"
+#$ssh $mgmt ". keystonerc_demo && os-config-neutron-gre-tenant"
+
 waitkey "Open Security Groups"
-$ssh $mgmt ". keystonerc_mydemo && os-sec-open"
+$ssh $mgmt ". keystonerc_demo && os-sec-open"
 
 waitkey "Importing SSH Key"
-$ssh $mgmt ". keystonerc_mydemo && os-import-key"
+$ssh $mgmt ". keystonerc_demo && os-import-key"
 
 waitkey "Booting Instance"
-$ssh $mgmt ". keystonerc_mydemo && os-boot-cirros"
+$ssh $mgmt ". keystonerc_demo && os-boot-cirros"
 
 waitkey "Associating Floating IP"
-$ssh $mgmt ". keystonerc_mydemo && os-create-floating-ip my-cirros-inst"
+$ssh $mgmt ". keystonerc_demo && os-create-floating-ip my-cirros-inst"
 
 waitkey "Retieving Floating IP"
 fip=$(ssh $mgmt cat my-cirros-inst.fip)
@@ -65,7 +70,7 @@ waitkey "Waiting for Instance at $fip"
 sshwait cirros@$fip
 
 waitkey "Set up Cinder Volume"
-$ssh $mgmt ". keystonerc_mydemo && os-create-cinder my-cirros-inst"
+$ssh $mgmt ". keystonerc_demo && os-create-cinder my-cirros-inst"
 
 waitkey "Mount Cinder Volume in Guest"
 $ssh cirros@$fip "sudo /usr/sbin/mkfs.ext4 /dev/vdb"
