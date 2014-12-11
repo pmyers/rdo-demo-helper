@@ -1,7 +1,10 @@
 #!/bin/bash
+
+EPEL6_RELEASE="http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm"
+
 rpm -ivh http://rhos-release.virt.bos.redhat.com/repos/rhos-release/rhos-release-latest.noarch.rpm
 rhos-release 6
 
-rpm -ivh http://mirror.pnl.gov/epel/6/i386/epel-release-6-8.noarch.rpm
+rpm -ivh $EPEL6_RELEASE
 
 echo "Done"
