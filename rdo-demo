@@ -69,17 +69,17 @@ waitkey "Retieving Floating IP"
 fip=$(ssh $mgmt cat my-cirros-inst.fip)
 
 waitkey "Waiting for Instance at $fip"
-sshwait cirros@$fip
+#sshwait cirros@$fip
 
 waitkey "Set up Cinder Volume"
 $ssh $mgmt ". keystonerc_demo && os-create-cinder my-cirros-inst"
 
 waitkey "Mount Cinder Volume in Guest"
-$ssh cirros@$fip "sudo /usr/sbin/mkfs.ext4 /dev/vdb"
-$ssh cirros@$fip "sudo mkdir -p /mnt/volume"
-$ssh cirros@$fip "sudo mount /dev/vdb /mnt/volume"
-$ssh cirros@$fip "df -h"
-$ssh cirros@$fip "sudo touch /mnt/volume/test.txt"
+#$ssh cirros@$fip "sudo /usr/sbin/mkfs.ext4 /dev/vdb"
+#$ssh cirros@$fip "sudo mkdir -p /mnt/volume"
+#$ssh cirros@$fip "sudo mount /dev/vdb /mnt/volume"
+#$ssh cirros@$fip "df -h"
+#$ssh cirros@$fip "sudo touch /mnt/volume/test.txt"
 
 waitkey "Swift Demo"
 $ssh $mgmt ". keystonerc_admin && os-demo-swift"
