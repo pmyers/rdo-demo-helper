@@ -33,7 +33,7 @@ $VIRSH start zzz-$TYPE
 sshwait $vm
 
 $ssh $vm "cd rdo-demo-helper && git pull && root-ssh-setup"
-$ssh $vm "sudo yum install -y http://rdo.fedorapeople.org/openstack/openstack-$REL/rdo-release-$REL.rpm"
+$ssh $vm "sudo yum install -y $RDO_URL/openstack-$REL/rdo-release-$REL.rpm"
 $ssh $vm "sudo yum update -y"
 $ssh $vm "sudo yum install openstack-packstack -y"
 

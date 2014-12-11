@@ -1,5 +1,7 @@
 #!/bin/bash
 
+RDO_URL="http://rdo.fedorapeople.org/openstack"
+
 IMG_TYPES="centos6 centos7 rhel6 rhel7 fedora20"
 RDO_RELEASES="icehouse juno"
 RHOS_RELEASES="5 6"

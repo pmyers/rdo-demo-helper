@@ -33,18 +33,8 @@ sshwait_hosts $TYPE $NUM
 
 foreach_hostssh $TYPE $NUM "cd rdo-demo-helper && git pull && root-ssh-setup"
 
-$ssh $mgmt "sudo yum install -y http://rdo.fedorapeople.org/openstack/openstack-$REL/rdo-release-$REL.rpm"
-$ssh $mgmt "sudo yum update -y"
-$ssh $mgmt "sudo yum install openstack-packstack -y"
-sleepwait 5
-
-foreach_hostssh $TYPE $NUM "sudo reboot"
-sleepwait 5
-
-sshwait_hosts $TYPE $NUM
-echo -ne "${txtblu}"
-foreach_hostssh $TYPE $NUM "uname -a"
-echo -ne "${txtrst}"
+$ssh $mgmt "rpm -q rdo-release || sudo yum install -y $RDO_URL/openstack-$REL/rdo-release-$REL.rpm"
+$ssh $mgmt "rpm -q openstack-packstack || sudo yum install openstack-packstack -y"
 
 for i in `seq 1 $NUM`; do
     ip="$(( $i + 100))"
