@@ -206,3 +206,10 @@ refresh-storage-pools() {
         $VIRSH pool-refresh $pool
     done
 }
+
+use_nested_virt() {
+    grep "Y" /sys/module/kvm_intel/parameters/nested > /dev/null 2>&1
+    if [ $? == 0 ]; then
+        echo "--cpu SandyBridge,match=exact,require=vmx"
+    fi
+}

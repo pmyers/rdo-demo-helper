@@ -62,7 +62,8 @@ for i in `seq 1 $NUM`; do
     sudo virt-install -n $image -r 4096 --vcpus 2 --noautoconsole \
         -w network=$TYPE-mgmt$macopt -w network=$TYPE-priv \
         --os-variant=$(osvariant $TYPE) \
-        --noreboot --import --disk path=$VMS_DIR/$image.img || error
+        --noreboot --import --disk path=$VMS_DIR/$image.img \
+        $(use_nested_virt) || error
 
     ssh-clean $image
 done

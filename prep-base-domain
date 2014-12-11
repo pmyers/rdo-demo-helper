@@ -96,7 +96,8 @@ sudo virt-sysprep --selinux-relabel --operations defaults,-ssh-userdir \
 sudo virt-install -n $vm -r 2048 --vcpus 2 --noautoconsole \
     -w network=$TYPE-mgmt$macopt -w network=$TYPE-priv \
     --os-variant=$(osvariant $TYPE) --graphics spice \
-    --import --disk path=$VMS_DIR/$vm.img || error
+    --import --disk path=$VMS_DIR/$vm.img \
+    $(use_nested_virt) || error
 
 ssh-clean $vm
 sshwait admin@$vm
