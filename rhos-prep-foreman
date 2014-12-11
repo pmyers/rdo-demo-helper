@@ -33,7 +33,7 @@ foreach_host $TYPE 1 "$VIRSH start"
 sshwait_hosts $TYPE 1
 
 $ssh $mgmt "cd rdo-demo-helper && git pull && root-ssh-setup"
-$ssh $mgmt "sudo yum-config-manager --disable epel"
+$ssh $mgmt "sudo yum-config-manager --disable epel > /dev/null"
 $ssh $mgmt "sudo rpm -Uvh http://goo.gl/gOPFeq"
 $ssh $mgmt "sudo rhos-release -u"
 $ssh $mgmt "sudo yum clean all && sudo yum update -y"

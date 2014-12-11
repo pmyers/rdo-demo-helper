@@ -37,7 +37,7 @@ $ssh $vm "sudo yum install -y $RDO_URL/openstack-$REL/rdo-release-$REL.rpm"
 $ssh $vm "sudo yum update -y"
 $ssh $vm "sudo yum install openstack-packstack -y"
 
-$ssh $vm "sudo yum-config-manager --enable epel"
+$ssh $vm "sudo yum-config-manager --enable epel > /dev/null"
 
 $ssh $vm "sudo yum install $(cat $srcdir/rdo-deps | xargs) -y"
 
