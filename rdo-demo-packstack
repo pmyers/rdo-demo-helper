@@ -47,4 +47,6 @@ $ssh $mgmt "sudo yum-config-manager --enable epel > /dev/null"
 $ssh $mgmt "gen-answer-file $TYPE $NUM rdo-demo-helper/$ans"
 $ssh $mgmt "packstack --answer-file=packstack.ans"
 
+$ssh $mgmt "sudo cp -vf /root/keystonerc_demo ~"
+
 $ssh $mgmt "rdo-${REL}-workarounds"
