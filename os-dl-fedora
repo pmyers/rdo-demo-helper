@@ -3,5 +3,5 @@
 img="fedora-20.x86_64.qcow2"
 url="http://cloud.fedoraproject.org/$img"
 
-test -f "$img" || curl -L $url -o $img
+test -f "fedora20-guest.img" || curl -L $url -o $img
 ln -sf $img fedora20-guest.img

@@ -3,5 +3,5 @@
 img="cirros-0.3.1-x86_64-disk.img" 
 url="http://download.cirros-cloud.net/0.3.1/$img"
 
-test -f "$img" || curl -L $url -o $img
+test -f "cirros-guest.img" || curl -L $url -o $img
 ln -sf $img cirros-guest.img
