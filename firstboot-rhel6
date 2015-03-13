@@ -3,7 +3,7 @@
 EPEL6_RELEASE="http://dl.fedoraproject.org/pub/epel/6/x86_64/epel-release-6-8.noarch.rpm"
 
 rpm -ivh http://rhos-release.virt.bos.redhat.com/repos/rhos-release/rhos-release-latest.noarch.rpm
-rhos-release 6
+rhos-release 5
 
 rpm -ivh $EPEL6_RELEASE
 
