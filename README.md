@@ -17,7 +17,7 @@ Prerequisites:
    on the local machine.  Make sure that libvirt is configured to recognize
    this directory as a valid location for storing VM images
 
-2. If using RHEL, download RHEL Guest Image
+2a. If using RHEL, download RHEL Guest Image
 
    RHEL 6 qcow2
    https://rhn.redhat.com/rhn/software/channel/downloads/Download.do?cid=16952
@@ -35,6 +35,13 @@ Prerequisites:
    repositories at Red Hat.  For non Red Hat users, CentOS 6 or 7 would be
    the way to go, at least until I integrate subscription-manager support in
    the scripts.
+
+2b. If using CentOS, download the CentOS Guest Images
+
+   ./get-centos-qcows
+
+   These will be downloaded as xz compressed files. Just unxz them into your
+   $VMS_DIR/bak directory and create the proper symlinks
 
 3. The script will add entries (via sudo) to /etc/hosts as a convenience
 

@@ -1,0 +1,4 @@
+#!/bin/bash
+
+wget http://cloud.centos.org/centos/7/images/CentOS-7-x86_64-GenericCloud.qcow2.xz
+wget http://cloud.centos.org/centos/6/images/CentOS-6-x86_64-GenericCloud.qcow2.xz
