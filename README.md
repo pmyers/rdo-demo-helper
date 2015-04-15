@@ -23,7 +23,7 @@ Prerequisites:
    https://rhn.redhat.com/rhn/software/channel/downloads/Download.do?cid=16952
 
    RHEL 7 qcow2
-   https://access.redhat.com/downloads/content/69/ver=/rhel---7/7.0/x86_64/product-downloads
+   https://access.redhat.com/downloads/content/69/ver=/rhel---7/7.1/x86_64/product-downloads
 
    A valid RHN login and RHEL 6 Server subscription is required.
 
